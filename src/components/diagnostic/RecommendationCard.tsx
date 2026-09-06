@@ -15,9 +15,16 @@ export function RecommendationCard({ recommendation, index }: RecommendationCard
       <span class="shrink-0 text-[44px] font-extralight leading-none text-[rgba(255,255,255,0.45)]">
         {number}
       </span>
-      <div class="flex flex-1 flex-col gap-2.5">
-        <p class="text-base text-white">{recommendation.title}</p>
-        <p class="text-sm text-[rgba(255,255,255,0.75)]">{recommendation.description}</p>
+      <div class="flex flex-1 flex-col gap-3">
+        {/* Title + description are one visual block (tight spacing, close
+            opacity) since Figma's mockup has one sentence per card but our
+            real content splits into a short title + longer description. */}
+        <div class="flex flex-col gap-1">
+          <p class="text-base leading-[26.4px] text-white">{recommendation.title}</p>
+          <p class="text-base leading-[26.4px] text-[rgba(255,255,255,0.85)]">
+            {recommendation.description}
+          </p>
+        </div>
         <span class="w-fit rounded-button bg-verde px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-bluenavy">
           {badge}
         </span>
