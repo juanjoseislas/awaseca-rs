@@ -1,4 +1,5 @@
 import type { Answer, Question } from "../../lib/diagnostic";
+import checkIconUrl from "../../assets/diagnostic/check-icon.svg?url";
 import { listItemDelay } from "./motion";
 
 type CardChoiceFieldProps = {
@@ -8,6 +9,12 @@ type CardChoiceFieldProps = {
   onToggleMulti: (answer: Answer) => void;
 };
 
+/**
+ * Vertical list of full-width option rows (single- and multi-select alike),
+ * each with a right-side selection indicator — used for every radio/
+ * checkbox-style question (Q1-Q3, the Q4-Q15 scored questions, Q16) so the
+ * whole questionnaire shares one consistent option pattern.
+ */
 export function CardChoiceField({ question, value, onSelectSingle, onToggleMulti }: CardChoiceFieldProps) {
   const isMultiple = question.type === "multiple";
   const selectedIds = isMultiple
@@ -34,9 +41,10 @@ export function CardChoiceField({ question, value, onSelectSingle, onToggleMulti
             type="button"
             disabled={isDisabled}
             aria-pressed={isSelected}
+            role={isMultiple ? "checkbox" : "radio"}
             onClick={() => (isMultiple ? onToggleMulti(answer) : onSelectSingle(answer))}
             class={[
-              "enter-el w-full rounded-card border-[1.5px] px-5 py-4 text-left text-base transition-colors",
+              "enter-el flex w-full items-center gap-4 rounded-card border-[1.5px] px-5 py-4 text-left text-base transition-colors",
               isSelected
                 ? "border-verde bg-cell-green font-semibold text-acento1"
                 : "border-[#e2e2e2] bg-white text-acento1 hover:border-azul",
@@ -44,7 +52,14 @@ export function CardChoiceField({ question, value, onSelectSingle, onToggleMulti
             ].join(" ")}
             style={{ animationDelay: `${listItemDelay(index)}ms` }}
           >
-            {option.label}
+            <span class="flex-1">{option.label}</span>
+            <span class="shrink-0" aria-hidden="true">
+              {isSelected ? (
+                <img src={checkIconUrl} alt="" class="size-6" />
+              ) : (
+                <span class="block size-6 rounded-full border-2 border-[#c7c7c7]" />
+              )}
+            </span>
           </button>
         );
       })}

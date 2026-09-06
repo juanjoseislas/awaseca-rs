@@ -1,10 +1,8 @@
 import type { Answer, Question } from "../../lib/diagnostic";
 import { DIMENSIONS } from "../../lib/diagnostic";
 import { CardChoiceField } from "./CardChoiceField";
-import { LikertField } from "./LikertField";
 import { OpenTextField } from "./OpenTextField";
 import { NAV_COPY, STAGE_LABELS } from "./copy";
-import { getVisualStyle } from "./question-presentation";
 import { StageProgress, type Stage } from "./StageProgress";
 
 type QuestionScreenProps = {
@@ -36,7 +34,7 @@ export function QuestionScreen({
   onNext,
   onBack,
 }: QuestionScreenProps) {
-  const visualStyle = getVisualStyle(question);
+  const isOpenText = question.type === "textarea";
   const eyebrow = question.dimension ? DIMENSIONS[question.dimension].name : STAGE_LABELS.perfil;
 
   return (
@@ -49,20 +47,16 @@ export function QuestionScreen({
       </h1>
 
       <div style={{ animationDelay: "65ms" }}>
-        {visualStyle === "cards" && question.type !== "textarea" ? (
+        {isOpenText ? (
+          <OpenTextField value={(value as string) ?? ""} onChange={onTextChange} />
+        ) : (
           <CardChoiceField
             question={question}
             value={value as Answer[] | Answer | undefined}
             onSelectSingle={onSelectSingle}
             onToggleMulti={onToggleMulti}
           />
-        ) : null}
-        {visualStyle === "likert" ? (
-          <LikertField question={question} value={value as Answer | undefined} onSelect={onSelectSingle} />
-        ) : null}
-        {visualStyle === "open-text" ? (
-          <OpenTextField value={(value as string) ?? ""} onChange={onTextChange} />
-        ) : null}
+        )}
       </div>
 
       {fieldError ? <p class="text-sm font-medium text-[#c0392b]">{fieldError}</p> : null}
