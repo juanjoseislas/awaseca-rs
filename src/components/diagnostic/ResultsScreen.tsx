@@ -77,10 +77,12 @@ export function ResultsScreen({ result, answers, lead }: ResultsScreenProps) {
       </section>
 
       {result.uncertaintyFlag ? (
-        <div class="mx-auto -mt-1 max-w-[680px] rounded-card bg-[#fff8e6] px-6 py-4 text-center">
-          <p class="text-sm font-bold text-[#8a6d1f]">{UNCERTAINTY_COPY.title}</p>
-          <p class="mt-1 text-sm text-[#8a6d1f]">{UNCERTAINTY_COPY.text}</p>
-        </div>
+        <section class="w-full bg-white px-8 pt-8">
+          <div class="mx-auto max-w-[680px] rounded-card bg-[#fff8e6] px-6 py-4 text-center">
+            <p class="text-sm font-bold text-[#8a6d1f]">{UNCERTAINTY_COPY.title}</p>
+            <p class="mt-1 text-sm text-[#8a6d1f]">{UNCERTAINTY_COPY.text}</p>
+          </div>
+        </section>
       ) : null}
 
       <section class="w-full bg-white px-8 py-14">

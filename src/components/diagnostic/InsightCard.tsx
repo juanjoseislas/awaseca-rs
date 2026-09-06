@@ -36,7 +36,10 @@ export function InsightCard({ variant, referenceContext, dimension }: InsightCar
 
   const icon = isPositive ? checkIconUrl : warnIconUrl;
   const accentColorClass = isPositive ? "text-verde" : "text-azul";
-  const borderColorClass = isPositive ? "border-verde" : "border-azul";
+  // Reference cards (the §21/§22 fallback) always get a neutral track-colored
+  // border — never the verde/azul accent — so they can never be mistaken for
+  // a real strength or gap card, even when the icon/score happen to align.
+  const borderColorClass = isReference ? "border-track" : isPositive ? "border-verde" : "border-azul";
   const bgColorClass = isPositive && !isReference ? "bg-grey" : "bg-white";
 
   const description = isReference
@@ -52,7 +55,7 @@ export function InsightCard({ variant, referenceContext, dimension }: InsightCar
       class={`flex flex-col gap-3.5 rounded-card border-t-[3px] p-7 shadow-[0_1px_2px_rgba(64,104,130,0.06)] ${borderColorClass} ${bgColorClass}`}
     >
       <div class="flex items-center justify-between">
-        <img src={icon} alt="" class="size-7" />
+        <img src={icon} alt="" class="size-8" />
         <span class={`text-[28px] font-bold tracking-tight ${accentColorClass}`}>{dimension.displayScore}</span>
       </div>
       <p class="text-[19px] font-bold text-acento1">{dimension.name}</p>

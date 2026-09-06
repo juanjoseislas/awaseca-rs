@@ -15,9 +15,13 @@ export function FinalCTASection({ cta, onCtaClick }: FinalCTASectionProps) {
           <span class="font-bold text-verde">200+</span> {RESULTS_COPY.finalCta.trustBadge}
         </span>
         <p class="text-[11px] font-bold uppercase tracking-wide text-verde">{RESULTS_COPY.finalCta.eyebrow}</p>
-        <h2 class="font-heading text-[32px] font-bold leading-tight text-white">{cta.title}</h2>
-        <p class="text-[17px] text-[rgba(255,255,255,0.78)]">{cta.body}</p>
-        {cta.modifier ? <p class="text-sm text-[rgba(255,255,255,0.6)]">{cta.modifier}</p> : null}
+        <h2 class="font-heading text-[46px] font-bold leading-[52.9px] tracking-[-0.46px] text-white">
+          {cta.title}
+        </h2>
+        <p class="text-[17px] leading-[28.9px] text-[rgba(255,255,255,0.78)]">{cta.body}</p>
+        {cta.modifier ? (
+          <p class="text-[17px] leading-[28.9px] text-[rgba(255,255,255,0.6)]">{cta.modifier}</p>
+        ) : null}
         <div class="mt-1 flex flex-col items-center gap-3">
           <button
             type="button"
