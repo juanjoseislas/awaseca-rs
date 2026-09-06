@@ -10,18 +10,17 @@ import {
 } from "../../lib/diagnostic-progress-storage";
 import { ContactGateForm } from "./ContactGateForm";
 import { InterstitialScreen } from "./InterstitialScreen";
-import { IntroScreen } from "./IntroScreen";
 import { QuestionScreen } from "./QuestionScreen";
 import { ResultsScreen } from "./ResultsScreen";
 import { ResumePrompt } from "./ResumePrompt";
 import { Topbar } from "./Topbar";
-import { COMPLETED_COPY, NAV_COPY, PRE_RESULT_COPY } from "./copy";
+import { COMPLETED_COPY, NAV_COPY } from "./copy";
 import { MAIN_QUESTION_IDS, wizardReducer } from "./state";
 import { INITIAL_WIZARD_STATE } from "./types";
 import { validateLeadForm } from "./validation";
 import type { Stage } from "./StageProgress";
 
-const RESUMABLE_SCREENS = new Set(["question", "completed", "pre-result", "q16", "q17"]);
+const RESUMABLE_SCREENS = new Set(["question", "completed", "q16", "q17"]);
 const PERFIL_COUNT = 3;
 const DIAGNOSTICO_COUNT = MAIN_QUESTION_IDS.length - PERFIL_COUNT;
 
@@ -96,15 +95,6 @@ export function DiagnosticApp() {
     }
   };
 
-  if (state.screen === "intro") {
-    return (
-      <div class="w-full">
-        <Topbar />
-        <IntroScreen onStart={() => dispatch({ type: "START" })} />
-      </div>
-    );
-  }
-
   if (state.screen === "question") {
     const questionId = MAIN_QUESTION_IDS[state.questionIndex];
     const question = QUESTIONS_BY_ID[questionId];
@@ -144,21 +134,6 @@ export function DiagnosticApp() {
           title={COMPLETED_COPY.title}
           body={COMPLETED_COPY.body}
           continueLabel={COMPLETED_COPY.continueLabel}
-          onContinue={() => dispatch({ type: "NEXT" })}
-        />
-      </div>
-    );
-  }
-
-  if (state.screen === "pre-result") {
-    return (
-      <div class="w-full">
-        <Topbar />
-        <InterstitialScreen
-          eyebrow={PRE_RESULT_COPY.eyebrow}
-          title={PRE_RESULT_COPY.title}
-          body={PRE_RESULT_COPY.body}
-          continueLabel={NAV_COPY.next}
           onContinue={() => dispatch({ type: "NEXT" })}
           onBack={() => dispatch({ type: "BACK" })}
           backLabel={NAV_COPY.back}

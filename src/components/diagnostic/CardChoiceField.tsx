@@ -39,9 +39,12 @@ export function CardChoiceField({ question, value, onSelectSingle, onToggleMulti
           <button
             key={option.id}
             type="button"
-            disabled={isDisabled}
+            aria-disabled={isDisabled}
             aria-pressed={isSelected}
             role={isMultiple ? "checkbox" : "radio"}
+            // Not a native `disabled` button: an at-cap option must still
+            // receive the click so onToggleMulti can surface the "Máximo
+            // dos opciones" message instead of silently doing nothing.
             onClick={() => (isMultiple ? onToggleMulti(answer) : onSelectSingle(answer))}
             class={[
               "enter-el flex w-full items-center gap-4 rounded-card border-[1.5px] px-5 py-4 text-left text-base transition-colors",

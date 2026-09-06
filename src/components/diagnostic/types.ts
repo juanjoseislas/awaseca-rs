@@ -2,10 +2,8 @@ import type { DiagnosticInput, DiagnosticResult } from "../../lib/diagnostic";
 import type { LeadFormValues } from "../../lib/diagnostic-submission";
 
 export type WizardScreen =
-  | "intro"
   | "question"
   | "completed"
-  | "pre-result"
   | "q16"
   | "q17"
   | "lead-capture"
@@ -41,7 +39,7 @@ export type WizardState = {
 };
 
 export const INITIAL_WIZARD_STATE: WizardState = {
-  screen: "intro",
+  screen: "question",
   questionIndex: 0,
   answers: { q1: [] },
   fieldError: null,

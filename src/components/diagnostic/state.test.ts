@@ -14,10 +14,9 @@ function stateAt(screen: WizardState["screen"], overrides: Partial<WizardState> 
 }
 
 describe("wizardReducer", () => {
-  it("START moves from intro to the first question", () => {
-    const next = wizardReducer(stateAt("intro"), { type: "START" });
-    expect(next.screen).toBe("question");
-    expect(next.questionIndex).toBe(0);
+  it("the initial state starts directly on the first question — no intro screen", () => {
+    expect(INITIAL_WIZARD_STATE.screen).toBe("question");
+    expect(INITIAL_WIZARD_STATE.questionIndex).toBe(0);
   });
 
   it("NEXT on a required single-select question without an answer blocks advancing", () => {
@@ -48,10 +47,8 @@ describe("wizardReducer", () => {
     expect(next.screen).toBe("completed");
   });
 
-  it("the completed -> pre-result -> q16 -> q17 chain advances without validation blocking", () => {
+  it("the completed -> q16 -> q17 chain advances without validation blocking", () => {
     let state = stateAt("completed");
-    state = wizardReducer(state, { type: "NEXT" });
-    expect(state.screen).toBe("pre-result");
     state = wizardReducer(state, { type: "NEXT" });
     expect(state.screen).toBe("q16");
     state = wizardReducer(state, { type: "NEXT" });
@@ -120,10 +117,17 @@ describe("wizardReducer", () => {
     expect(state.answers.q1).toHaveLength(0);
   });
 
-  it("BACK from question 0 returns to intro", () => {
+  it("BACK from question 0 is a no-op — there is no earlier screen", () => {
     const state = stateAt("question", { questionIndex: 0 });
     const next = wizardReducer(state, { type: "BACK" });
-    expect(next.screen).toBe("intro");
+    expect(next.screen).toBe("question");
+    expect(next.questionIndex).toBe(0);
+  });
+
+  it("BACK from q16 returns to the completed interstitial", () => {
+    const state = stateAt("q16");
+    const next = wizardReducer(state, { type: "BACK" });
+    expect(next.screen).toBe("completed");
   });
 
   it("BACK preserves previously entered answers", () => {
@@ -143,10 +147,30 @@ describe("wizardReducer", () => {
     expect(next.submission).toBe("error");
   });
 
-  it("RESET returns to the initial intro state", () => {
+  it("RESET returns to the initial state — first question, no answers", () => {
     const state = stateAt("q17", { questionIndex: 10 });
     const next = wizardReducer(state, { type: "RESET" });
-    expect(next.screen).toBe("intro");
+    expect(next.screen).toBe("question");
     expect(next.questionIndex).toBe(0);
+  });
+
+  it("TOGGLE_MULTI_ANSWER surfaces a short message when the cap is exceeded", () => {
+    let state = stateAt("question", { questionIndex: 0, answers: { q1: [] } });
+    state = wizardReducer(state, {
+      type: "TOGGLE_MULTI_ANSWER",
+      option: answerFor("q1", "q1_regulatory"),
+      maxSelections: 2,
+    });
+    state = wizardReducer(state, {
+      type: "TOGGLE_MULTI_ANSWER",
+      option: answerFor("q1", "q1_clients"),
+      maxSelections: 2,
+    });
+    state = wizardReducer(state, {
+      type: "TOGGLE_MULTI_ANSWER",
+      option: answerFor("q1", "q1_investors"),
+      maxSelections: 2,
+    });
+    expect(state.fieldError).toBe("Máximo dos opciones.");
   });
 });

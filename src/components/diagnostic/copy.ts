@@ -10,7 +10,6 @@ export const NAV_COPY = {
   next: "Siguiente",
   back: "‹ Atrás",
   seeResults: "Ver mi diagnóstico",
-  startCta: "Comenzar diagnóstico",
   skip: "Omitir",
   continueProgress: "Continuar",
   restart: "Empezar de nuevo",
@@ -22,13 +21,6 @@ export const STAGE_LABELS = {
   contacto: "Contacto",
 };
 
-export const INTRO_COPY = {
-  eyebrow: "Diagnóstico gratuito",
-  title: "Descubre qué tan preparada está tu empresa para reportar sostenibilidad",
-  subtitle: "15 preguntas · 5 minutos · Diagnóstico gratuito",
-  body: "Responde este breve diagnóstico y recibe tu Índice de Preparación para Reportes de Sostenibilidad (IPRS), con tus principales fortalezas, brechas y próximos pasos.",
-};
-
 export const RESUME_PROMPT_COPY = {
   title: "Tienes un diagnóstico en progreso",
   body: "¿Quieres continuar donde lo dejaste o empezar de nuevo?",
@@ -37,14 +29,8 @@ export const RESUME_PROMPT_COPY = {
 export const COMPLETED_COPY = {
   eyebrow: "100% completado",
   title: "Diagnóstico completado",
-  body: "Ya respondiste todas las preguntas principales. Antes de mostrarte tu resultado, dos preguntas opcionales nos ayudan a entender mejor tu contexto.",
+  body: "Ya respondiste todas las preguntas principales. Antes de mostrarte tu resultado, dos preguntas opcionales nos ayudarán a entender mejor tu contexto.",
   continueLabel: "Continuar",
-};
-
-export const PRE_RESULT_COPY = {
-  eyebrow: "Antes de mostrarte tu resultado",
-  title: "Un poco más de contexto",
-  body: "Estas dos preguntas son opcionales y no afectan tu puntaje.",
 };
 
 export const LEAD_GATE_COPY = {
@@ -72,10 +58,19 @@ export const COMPANY_SIZE_OPTIONS = [
   { id: "enterprise", label: "Más de 1,000 empleados", narrativePhrase: "Una gran corporación" },
 ];
 
+const SMALL_NUMBER_WORDS: Record<number, string> = { 1: "una", 2: "dos", 3: "tres", 4: "cuatro" };
+function smallNumberWord(n: number): string {
+  return SMALL_NUMBER_WORDS[n] ?? String(n);
+}
+
 export const VALIDATION_COPY = {
   selectOne: "Selecciona una opción para continuar.",
   selectAtLeastOne: "Selecciona al menos una opción.",
   selectAtMost: (max: number) => `Puedes seleccionar máximo ${max} opciones.`,
+  /** Shown when the user tries to pick beyond the max — short by design. */
+  maxSelectionsReached: (max: number) => `Máximo ${smallNumberWord(max)} opciones.`,
+  /** Static hint shown under a multi-select question's title. */
+  maxSelectionsHint: (max: number) => `Elige máximo ${smallNumberWord(max)} opciones.`,
   required: "Este campo es obligatorio.",
   invalidEmail: "Ingresa un correo electrónico válido.",
 };
@@ -101,7 +96,16 @@ export const RESULTS_COPY = {
   strengths: {
     eyebrow: "Tus principales fortalezas",
     title: "En qué estás por encima del promedio",
-    noStrengthsEyebrow: "Tus áreas con mayor nivel de preparación",
+    // Shown instead when no dimension qualifies as a real strength (spec
+    // §21) — must not imply "above average" when nothing is, and must be
+    // consistent with the real classification badge shown on each card
+    // (e.g. "Brecha prioritaria").
+    noStrengths: {
+      eyebrow: "Tus áreas con mayor nivel de preparación",
+      title: "Aún no identificamos fortalezas consolidadas",
+      subtitle:
+        "Con base en tu diagnóstico actual no identificamos fortalezas consolidadas; sin embargo, estas son tus áreas con mejor puntuación relativa y un buen punto de partida para avanzar.",
+    },
   },
   gaps: {
     eyebrow: "Tus principales brechas",

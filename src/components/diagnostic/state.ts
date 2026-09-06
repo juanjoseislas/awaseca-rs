@@ -3,6 +3,7 @@ import { calculateDiagnostic, QUESTIONS_BY_ID } from "../../lib/diagnostic";
 import type { LeadFormValues } from "../../lib/diagnostic-submission";
 import type { PersistedProgress } from "../../lib/diagnostic-progress-storage";
 import { buildDiagnosticInput } from "./build-diagnostic-input";
+import { VALIDATION_COPY } from "./copy";
 import { validateAnswerForQuestion } from "./validation";
 import { EMPTY_LEAD_FORM, INITIAL_WIZARD_STATE, type LeadFormErrors, type WizardState } from "./types";
 
@@ -26,7 +27,6 @@ export const MAIN_QUESTION_IDS = [
 
 export type WizardAction =
   | { type: "RESTORE"; payload: PersistedProgress }
-  | { type: "START" }
   | { type: "RESET" }
   | { type: "SET_SINGLE_ANSWER"; questionId: string; answer: Answer }
   | { type: "TOGGLE_MULTI_ANSWER"; option: Answer; maxSelections?: number }
@@ -84,9 +84,6 @@ function handleNext(state: WizardState): WizardState {
     }
 
     case "completed":
-      return { ...state, screen: "pre-result", direction: "forward" };
-
-    case "pre-result":
       return { ...state, screen: "q16", direction: "forward" };
 
     case "q16":
@@ -106,14 +103,12 @@ function handleBack(state: WizardState): WizardState {
       if (state.questionIndex > 0) {
         return { ...state, questionIndex: state.questionIndex - 1, fieldError: null, direction: "backward" };
       }
-      return { ...state, screen: "intro", direction: "backward" };
+      return state; // no earlier screen — Back is hidden on the first question anyway
     }
     case "completed":
       return { ...state, screen: "question", questionIndex: MAIN_QUESTION_IDS.length - 1, direction: "backward" };
-    case "pre-result":
-      return { ...state, screen: "completed", direction: "backward" };
     case "q16":
-      return { ...state, screen: "pre-result", direction: "backward" };
+      return { ...state, screen: "completed", direction: "backward" };
     case "q17":
       return { ...state, screen: "q16", direction: "backward" };
     case "lead-capture":
@@ -132,9 +127,6 @@ export function wizardReducer(state: WizardState, action: WizardAction): WizardS
         questionIndex: action.payload.questionIndex,
         answers: action.payload.answers,
       };
-
-    case "START":
-      return { ...INITIAL_WIZARD_STATE, screen: "question", questionIndex: 0 };
 
     case "RESET":
       return { ...INITIAL_WIZARD_STATE };
@@ -160,7 +152,7 @@ export function wizardReducer(state: WizardState, action: WizardAction): WizardS
         };
       }
       if (action.maxSelections && current.length >= action.maxSelections) {
-        return state;
+        return { ...state, fieldError: VALIDATION_COPY.maxSelectionsReached(action.maxSelections) };
       }
       return {
         ...state,

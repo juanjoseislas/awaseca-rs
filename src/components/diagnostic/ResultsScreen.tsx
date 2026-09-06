@@ -127,10 +127,26 @@ export function ResultsScreen({ result, answers, lead }: ResultsScreenProps) {
 
       <section class="w-full bg-white px-8 py-14">
         <div class="mx-auto flex max-w-[1100px] flex-col items-center">
-          <span class="text-[11px] font-bold uppercase tracking-wide text-text-eyebrow">
-            {result.strengths.length > 0 ? RESULTS_COPY.strengths.eyebrow : RESULTS_COPY.strengths.noStrengthsEyebrow}
-          </span>
-          <h2 class="mt-2.5 font-heading text-[34px] font-bold text-acento1">{RESULTS_COPY.strengths.title}</h2>
+          {result.strengths.length > 0 ? (
+            <>
+              <span class="text-[11px] font-bold uppercase tracking-wide text-text-eyebrow">
+                {RESULTS_COPY.strengths.eyebrow}
+              </span>
+              <h2 class="mt-2.5 font-heading text-[34px] font-bold text-acento1">{RESULTS_COPY.strengths.title}</h2>
+            </>
+          ) : (
+            <>
+              <span class="text-[11px] font-bold uppercase tracking-wide text-text-eyebrow">
+                {RESULTS_COPY.strengths.noStrengths.eyebrow}
+              </span>
+              <h2 class="mt-2.5 font-heading text-[34px] font-bold text-acento1">
+                {RESULTS_COPY.strengths.noStrengths.title}
+              </h2>
+              <p class="mt-3 max-w-[680px] text-center text-[15px] text-text-muted">
+                {RESULTS_COPY.strengths.noStrengths.subtitle}
+              </p>
+            </>
+          )}
           <div class="mt-9 grid w-full grid-cols-1 gap-6 min-[700px]:grid-cols-2">
             {result.strengths.length > 0
               ? result.strengths.map((dimension) => (

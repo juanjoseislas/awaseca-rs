@@ -2,7 +2,7 @@ import type { Answer, Question } from "../../lib/diagnostic";
 import { DIMENSIONS } from "../../lib/diagnostic";
 import { CardChoiceField } from "./CardChoiceField";
 import { OpenTextField } from "./OpenTextField";
-import { NAV_COPY, STAGE_LABELS } from "./copy";
+import { NAV_COPY, STAGE_LABELS, VALIDATION_COPY } from "./copy";
 import { StageProgress, type Stage } from "./StageProgress";
 
 type QuestionScreenProps = {
@@ -35,7 +35,15 @@ export function QuestionScreen({
   onBack,
 }: QuestionScreenProps) {
   const isOpenText = question.type === "textarea";
-  const eyebrow = question.dimension ? DIMENSIONS[question.dimension].name : STAGE_LABELS.perfil;
+  const eyebrow = question.dimension ? DIMENSIONS[question.dimension].name : STAGE_LABELS[stage];
+
+  const isEmpty = isOpenText
+    ? !(value as string | undefined)?.trim()
+    : question.type === "multiple"
+      ? !(value as Answer[] | undefined)?.length
+      : !value;
+  const isSkippable = !question.required && isEmpty;
+  const nextLabel = isSkippable ? NAV_COPY.skip : NAV_COPY.next;
 
   return (
     <div class="mx-auto flex max-w-[620px] flex-col gap-6 px-4 py-12">
@@ -45,6 +53,11 @@ export function QuestionScreen({
       <h1 class="enter-el text-[32px] font-semibold leading-tight text-acento1" style={{ animationDelay: "30ms" }}>
         {question.text}
       </h1>
+      {question.maxSelections ? (
+        <p class="enter-el -mt-4 text-sm text-text-muted" style={{ animationDelay: "55ms" }}>
+          {VALIDATION_COPY.maxSelectionsHint(question.maxSelections)}
+        </p>
+      ) : null}
 
       <div style={{ animationDelay: "65ms" }}>
         {isOpenText ? (
@@ -74,7 +87,7 @@ export function QuestionScreen({
           onClick={onNext}
           class="rounded-button bg-acento1 px-8 py-3 text-sm font-bold text-white transition-colors hover:bg-[#345266]"
         >
-          {NAV_COPY.next}
+          {nextLabel}
         </button>
       </div>
     </div>
