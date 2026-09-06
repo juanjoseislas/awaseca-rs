@@ -1,0 +1,88 @@
+import type { Answer, Question } from "../../lib/diagnostic";
+import { DIMENSIONS } from "../../lib/diagnostic";
+import { CardChoiceField } from "./CardChoiceField";
+import { LikertField } from "./LikertField";
+import { OpenTextField } from "./OpenTextField";
+import { NAV_COPY, STAGE_LABELS } from "./copy";
+import { getVisualStyle } from "./question-presentation";
+import { StageProgress, type Stage } from "./StageProgress";
+
+type QuestionScreenProps = {
+  question: Question;
+  value: Answer[] | Answer | string | undefined;
+  fieldError: string | null;
+  isFirst: boolean;
+  stage: Stage;
+  stageProgress: number;
+  caption: string | null;
+  onSelectSingle: (answer: Answer) => void;
+  onToggleMulti: (answer: Answer) => void;
+  onTextChange: (text: string) => void;
+  onNext: () => void;
+  onBack: () => void;
+};
+
+export function QuestionScreen({
+  question,
+  value,
+  fieldError,
+  isFirst,
+  stage,
+  stageProgress,
+  caption,
+  onSelectSingle,
+  onToggleMulti,
+  onTextChange,
+  onNext,
+  onBack,
+}: QuestionScreenProps) {
+  const visualStyle = getVisualStyle(question);
+  const eyebrow = question.dimension ? DIMENSIONS[question.dimension].name : STAGE_LABELS.perfil;
+
+  return (
+    <div class="mx-auto flex max-w-[620px] flex-col gap-6 px-4 py-12">
+      <StageProgress activeStage={stage} activeStageProgress={stageProgress} caption={caption} />
+
+      <p class="enter-el text-sm font-semibold uppercase tracking-wide text-azul">{eyebrow}</p>
+      <h1 class="enter-el text-[32px] font-semibold leading-tight text-acento1" style={{ animationDelay: "30ms" }}>
+        {question.text}
+      </h1>
+
+      <div style={{ animationDelay: "65ms" }}>
+        {visualStyle === "cards" && question.type !== "textarea" ? (
+          <CardChoiceField
+            question={question}
+            value={value as Answer[] | Answer | undefined}
+            onSelectSingle={onSelectSingle}
+            onToggleMulti={onToggleMulti}
+          />
+        ) : null}
+        {visualStyle === "likert" ? (
+          <LikertField question={question} value={value as Answer | undefined} onSelect={onSelectSingle} />
+        ) : null}
+        {visualStyle === "open-text" ? (
+          <OpenTextField value={(value as string) ?? ""} onChange={onTextChange} />
+        ) : null}
+      </div>
+
+      {fieldError ? <p class="text-sm font-medium text-[#c0392b]">{fieldError}</p> : null}
+
+      <div class="mt-4 flex items-center justify-between">
+        {!isFirst ? (
+          <button type="button" onClick={onBack} class="text-sm font-medium text-silver hover:text-acento1">
+            {NAV_COPY.back}
+          </button>
+        ) : (
+          <span />
+        )}
+        <button
+          type="button"
+          onClick={onNext}
+          class="rounded-button bg-acento1 px-8 py-3 text-sm font-bold text-white transition-colors hover:bg-[#345266]"
+        >
+          {NAV_COPY.next}
+        </button>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,53 @@
+import type { Answer, Question } from "../../lib/diagnostic";
+import { listItemDelay } from "./motion";
+
+type CardChoiceFieldProps = {
+  question: Question;
+  value: Answer[] | Answer | undefined;
+  onSelectSingle: (answer: Answer) => void;
+  onToggleMulti: (answer: Answer) => void;
+};
+
+export function CardChoiceField({ question, value, onSelectSingle, onToggleMulti }: CardChoiceFieldProps) {
+  const isMultiple = question.type === "multiple";
+  const selectedIds = isMultiple
+    ? new Set((value as Answer[] | undefined)?.map((a) => a.optionId) ?? [])
+    : new Set(value ? [(value as Answer).optionId] : []);
+  const atCap =
+    isMultiple && question.maxSelections ? selectedIds.size >= question.maxSelections : false;
+
+  return (
+    <div class="flex flex-col gap-3">
+      {(question.options ?? []).map((option, index) => {
+        const isSelected = selectedIds.has(option.id);
+        const isDisabled = isMultiple && atCap && !isSelected;
+        const answer: Answer = {
+          questionId: question.id,
+          optionId: option.id,
+          label: option.label,
+          score: option.score,
+        };
+
+        return (
+          <button
+            key={option.id}
+            type="button"
+            disabled={isDisabled}
+            aria-pressed={isSelected}
+            onClick={() => (isMultiple ? onToggleMulti(answer) : onSelectSingle(answer))}
+            class={[
+              "enter-el w-full rounded-card border-[1.5px] px-5 py-4 text-left text-base transition-colors",
+              isSelected
+                ? "border-verde bg-cell-green font-semibold text-acento1"
+                : "border-[#e2e2e2] bg-white text-acento1 hover:border-azul",
+              isDisabled ? "cursor-not-allowed opacity-40" : "cursor-pointer",
+            ].join(" ")}
+            style={{ animationDelay: `${listItemDelay(index)}ms` }}
+          >
+            {option.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
