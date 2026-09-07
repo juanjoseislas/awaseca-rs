@@ -1,43 +1,87 @@
-# Astro Starter Kit: Minimal
+# Awaseca — IPRS Diagnóstico
 
-```sh
-npm create astro@latest -- --template minimal
+A free digital assessment tool that helps a company determine its readiness for
+preparing or strengthening its Sustainability Report — the **IPRS** (Índice de
+Preparación para Reportes de Sostenibilidad). 15 questions, 5 minutes, a
+0–100 score, a readiness level, strengths/gaps, and a personalized
+recommendation + CTA.
+
+## Stack
+
+Astro + TypeScript + Preact (one island: the quiz/results app) + Tailwind v4.
+Deployed on Cloudflare via the `@astrojs/cloudflare` adapter (the site is
+mostly static; `src/pages/api/submit-diagnostic.ts` is the one dynamic route).
+Supabase stores diagnostic submissions.
+
+## Project structure
+
+```
+src/lib/diagnostic/            Phase 1: the pure scoring/recommendation/CTA engine
+src/lib/diagnostic-submission.ts  Phase 3: posts a completed diagnostic to the API route
+src/lib/diagnostic-progress-storage.ts  localStorage-backed in-progress quiz state
+src/components/diagnostic/     Phase 2: the Preact quiz/results UI (one island)
+src/pages/index.astro          the static shell hosting the island
+src/pages/api/submit-diagnostic.ts  Phase 3: validates + recomputes + saves to Supabase
+supabase/schema.sql            the diagnostic_submissions table (see setup below)
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Commands
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+```bash
+npm install
+astro dev --background   # start the dev server at localhost:4321 (see below)
+npm run build             # type-check + build to ./dist/
+npm run preview            # preview the production build locally
+npm run test                # vitest — engine, UI state, and API route tests
+npm run astro check         # type-check only
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+Manage the background dev server with `astro dev stop`, `astro dev status`,
+`astro dev logs`.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+### Testing
 
-Any static assets, like images, can be placed in the `public/` directory.
+`npm run test` runs the full suite (engine, reducer, localStorage, and the
+API route with a mocked Supabase client — no real project needed to run
+tests). `npm run astro check` type-checks the whole project. There's no
+separate linter configured yet.
 
-## 🧞 Commands
+## Persistence setup (Supabase)
 
-All commands are run from the root of the project, from a terminal:
+The diagnostic saves each submission via a server-side API route, which
+independently re-validates and recomputes the result from the raw answers
+before writing (never trusting a client-submitted score) and inserts one row
+into a `diagnostic_submissions` table.
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+1. Create a free project at [supabase.com](https://supabase.com) (pick a
+   region close to the target audience). You'll be asked for a database
+   password at creation — generate a strong one and store it safely; this
+   project doesn't need it day-to-day (it uses the Data API + the Secret
+   API key, not a direct Postgres connection).
+2. On the project's security options, enable: **Data API** (required —
+   it's what `@supabase/supabase-js` talks to), **Automatically expose new
+   tables** (convenience; RLS still gates access regardless), **Automatic
+   RLS** (safety net, matches this schema's explicit `enable row level
+   security`).
+3. Open the SQL Editor and run `supabase/schema.sql`.
+4. Project Settings → API Keys: copy the **Project URL** and the **Secret**
+   API key (Supabase's current name for what used to be `service_role` —
+   same purpose) — not the **Publishable**/`anon` key, since this table
+   intentionally has no public access (RLS is on with zero policies; only
+   the secret key, used server-side only, can touch it).
+5. Add both as environment variables:
+   - **Local dev**: copy `.dev.vars.example` to `.dev.vars` (gitignored) and
+     fill in the real values.
+   - **Production**: Cloudflare Pages dashboard → Settings → Environment
+     variables.
 
-## 👀 Want to learn more?
+## Design tokens
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Never hardcode hex values — reference a named token. Tokens live in
+`src/styles/theme.css` (Tailwind v4's `@theme` block).
+
+## Documentation
+
+- [Astro docs](https://docs.astro.build)
+- [Astro + Cloudflare adapter](https://docs.astro.build/en/guides/deploy/cloudflare/)
+- [Supabase JS client](https://supabase.com/docs/reference/javascript/introduction)

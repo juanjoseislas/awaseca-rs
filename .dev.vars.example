@@ -1,0 +1,12 @@
+# Copy this file to `.dev.vars` (gitignored) and fill in real values for
+# local development. In production these are set in the Cloudflare Pages
+# dashboard under Settings -> Environment variables, not in this file.
+#
+# Project Settings -> API Keys in your Supabase project gives you both
+# values. Use the "Secret" API key here (the current name for what used
+# to be called `service_role` — same purpose: full access, bypasses RLS,
+# server-side only). NEVER the "Publishable"/`anon` key — this table has
+# no public access (see supabase/schema.sql).
+
+SUPABASE_URL=https://your-project-ref.supabase.co
+SUPABASE_SECRET_KEY=your-secret-api-key
