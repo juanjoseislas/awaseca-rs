@@ -6,14 +6,17 @@ type InsertError = { message: string; code?: string } | null;
 
 const VALID_ENV = { SUPABASE_URL: "https://test.supabase.co", SUPABASE_SECRET_KEY: "test-service-role-key" };
 
-const { insertMock, fromMock, createClientMock, mockEnv } = vi.hoisted(() => {
+const { insertMock, fromMock, createClientMock, mockEnv, rateLimiterMock } = vi.hoisted(() => {
   const insertMock = vi.fn(async (_row: Record<string, unknown>): Promise<{ error: InsertError }> => ({
     error: null,
   }));
   const fromMock = vi.fn(() => ({ insert: insertMock }));
   const createClientMock = vi.fn(() => ({ from: fromMock }));
-  const mockEnv: Record<string, string | undefined> = {};
-  return { insertMock, fromMock, createClientMock, mockEnv };
+  const rateLimiterMock = vi.fn(async (_options: { key: string }): Promise<{ success: boolean }> => ({
+    success: true,
+  }));
+  const mockEnv: Record<string, unknown> = {};
+  return { insertMock, fromMock, createClientMock, mockEnv, rateLimiterMock };
 });
 
 vi.mock("@supabase/supabase-js", () => ({ createClient: createClientMock }));
@@ -33,16 +36,16 @@ const VALID_LEAD: LeadFormValues = {
   industry: "Tecnología",
 };
 
-function makeRequest(body: unknown): Request {
+function makeRequest(body: unknown, headers?: Record<string, string>): Request {
   return new Request("http://localhost/api/submit-diagnostic", {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: { "content-type": "application/json", ...headers },
     body: typeof body === "string" ? body : JSON.stringify(body),
   });
 }
 
-function makeContext(body: unknown) {
-  return { request: makeRequest(body) } as never;
+function makeContext(body: unknown, headers?: Record<string, string>) {
+  return { request: makeRequest(body, headers) } as never;
 }
 
 async function readJson(response: Response): Promise<any> {
@@ -55,8 +58,11 @@ describe("POST /api/submit-diagnostic", () => {
     fromMock.mockClear();
     createClientMock.mockClear();
     insertMock.mockResolvedValue({ error: null });
+    rateLimiterMock.mockClear();
+    rateLimiterMock.mockResolvedValue({ success: true });
     mockEnv.SUPABASE_URL = VALID_ENV.SUPABASE_URL;
     mockEnv.SUPABASE_SECRET_KEY = VALID_ENV.SUPABASE_SECRET_KEY;
+    mockEnv.SUBMIT_DIAGNOSTIC_LIMITER = { limit: rateLimiterMock };
   });
 
   afterEach(() => {
@@ -168,5 +174,32 @@ describe("POST /api/submit-diagnostic", () => {
     const insertedRow = insertMock.mock.calls[0][0];
     expect(insertedRow.iprs).toBe(0);
     expect(insertedRow.final_level).toBe("Inicial");
+  });
+
+  it("rejects a request with 429 when the rate limiter denies it", async () => {
+    rateLimiterMock.mockResolvedValueOnce({ success: false });
+    const answers = buildInput(TIER1_OPTIONS);
+    const response = await POST(makeContext({ lead: VALID_LEAD, answers }));
+
+    expect(response.status).toBe(429);
+    expect((await readJson(response)).error).toBe("rate_limited");
+    expect(response.headers.get("Retry-After")).toBe("60");
+    expect(insertMock).not.toHaveBeenCalled();
+  });
+
+  it("keys the rate limiter by the CF-Connecting-IP header", async () => {
+    const answers = buildInput(TIER1_OPTIONS);
+    await POST(makeContext({ lead: VALID_LEAD, answers }, { "CF-Connecting-IP": "203.0.113.5" }));
+
+    expect(rateLimiterMock).toHaveBeenCalledWith({ key: "203.0.113.5" });
+  });
+
+  it("fails open (allows the request) when the rate limiter binding is missing", async () => {
+    mockEnv.SUBMIT_DIAGNOSTIC_LIMITER = undefined;
+    const answers = buildInput(TIER1_OPTIONS);
+    const response = await POST(makeContext({ lead: VALID_LEAD, answers }));
+
+    expect(response.status).toBe(200);
+    expect(insertMock).toHaveBeenCalledTimes(1);
   });
 });

@@ -25,15 +25,18 @@ type SubmitDiagnosticBody = {
   attribution?: Attribution;
 };
 
+type RateLimiter = { limit: (options: { key: string }) => Promise<{ success: boolean }> };
+
 type CloudflareEnv = {
   SUPABASE_URL?: string;
   SUPABASE_SECRET_KEY?: string;
+  SUBMIT_DIAGNOSTIC_LIMITER?: RateLimiter;
 };
 
-function jsonResponse(status: number, body: unknown): Response {
+function jsonResponse(status: number, body: unknown, extraHeaders?: Record<string, string>): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { "content-type": "application/json" },
+    headers: { "content-type": "application/json", ...extraHeaders },
   });
 }
 
@@ -47,6 +50,19 @@ function jsonResponse(status: number, body: unknown): Response {
  * might send is ignored.
  */
 export const POST: APIRoute = async ({ request }) => {
+  const env = cloudflareEnv as unknown as CloudflareEnv;
+
+  const rateLimiter = env?.SUBMIT_DIAGNOSTIC_LIMITER;
+  if (rateLimiter) {
+    const ip = request.headers.get("CF-Connecting-IP") ?? "unknown";
+    const { success } = await rateLimiter.limit({ key: ip });
+    if (!success) {
+      return jsonResponse(429, { ok: false, error: "rate_limited" }, { "Retry-After": "60" });
+    }
+  } else {
+    console.error("[api/submit-diagnostic] missing SUBMIT_DIAGNOSTIC_LIMITER binding — skipping rate limit");
+  }
+
   let body: SubmitDiagnosticBody;
   try {
     body = await request.json();
@@ -75,7 +91,6 @@ export const POST: APIRoute = async ({ request }) => {
     return jsonResponse(500, { ok: false, error: "calculation_failed" });
   }
 
-  const env = cloudflareEnv as unknown as CloudflareEnv;
   if (!env?.SUPABASE_URL || !env?.SUPABASE_SECRET_KEY) {
     console.error("[api/submit-diagnostic] missing SUPABASE_URL/SUPABASE_SECRET_KEY env vars");
     return jsonResponse(500, { ok: false, error: "storage_not_configured" });
