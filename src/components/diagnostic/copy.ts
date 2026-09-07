@@ -39,6 +39,8 @@ export const LEAD_GATE_COPY = {
   body: "Hemos analizado tus respuestas y ya tenemos tu nivel de preparación, principales fortalezas, brechas y recomendaciones.\n\nCompleta tus datos para ver tu diagnóstico.",
   submitLabel: "Ver mi diagnóstico",
   submittingLabel: "Calculando tu diagnóstico...",
+  requiredFieldsNote: "Los campos marcados con * son obligatorios.",
+  incompleteFormMessage: "Completa los campos requeridos para ver tu diagnóstico.",
   fields: {
     firstName: "Nombre",
     lastName: "Apellido",
