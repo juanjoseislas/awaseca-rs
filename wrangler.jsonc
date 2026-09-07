@@ -4,6 +4,7 @@
 	"compatibility_flags": ["global_fetch_strictly_public"],
 	"name": "awaseca-rs",
 	"main": "@astrojs/cloudflare/entrypoints/server",
+	"keep_vars": true,
 	"assets": {
 		"directory": "./dist",
 		"binding": "ASSETS"

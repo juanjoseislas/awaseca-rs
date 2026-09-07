@@ -45,7 +45,7 @@ function Field({
 
 export function ContactGateForm({ values, errors, submission, onChange, onSubmit }: ContactGateFormProps) {
   const isSubmitting = submission === "submitting";
-  const hasErrors = Object.keys(errors).length > 0;
+  const hasErrors = Object.values(errors).some(Boolean);
 
   return (
     <div class="enter-el mx-auto flex max-w-[760px] flex-col gap-6 px-4 py-12">
