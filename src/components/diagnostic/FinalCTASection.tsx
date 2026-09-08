@@ -1,6 +1,6 @@
 import type { CTAResult } from "../../lib/diagnostic";
 import ctaArrowUrl from "../../assets/diagnostic/cta-arrow-icon.svg?url";
-import { RESULTS_COPY } from "./copy";
+import { BOOKING_URL, RESULTS_COPY } from "./copy";
 
 type FinalCTASectionProps = {
   cta: CTAResult;
@@ -23,14 +23,16 @@ export function FinalCTASection({ cta, onCtaClick }: FinalCTASectionProps) {
           <p class="text-[17px] leading-[28.9px] text-[rgba(255,255,255,0.6)]">{cta.modifier}</p>
         ) : null}
         <div class="mt-1 flex flex-col items-center gap-3">
-          <button
-            type="button"
+          <a
+            href={BOOKING_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             onClick={onCtaClick}
             class="flex items-center gap-2.5 rounded-cta bg-verde px-14 py-4 text-[18px] font-bold text-bluenavy shadow-[0_4px_9px_rgba(102,204,153,0.22)]"
           >
             {cta.buttonLabel}
             <img src={ctaArrowUrl} alt="" class="size-[18px]" />
-          </button>
+          </a>
           <p class="text-xs text-[rgba(255,255,255,0.42)]">{RESULTS_COPY.finalCta.disclaimerNote}</p>
         </div>
         <a href="#" class="mt-2 text-[13px] text-[rgba(255,255,255,0.38)]">

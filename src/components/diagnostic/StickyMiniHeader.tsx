@@ -1,4 +1,5 @@
 import type { CTAResult } from "../../lib/diagnostic";
+import { BOOKING_URL } from "./copy";
 
 type StickyMiniHeaderProps = {
   displayIprs: number;
@@ -25,13 +26,15 @@ export function StickyMiniHeader({ displayIprs, finalLevel, cta, visible, onCtaC
             {finalLevel}
           </span>
         </div>
-        <button
-          type="button"
+        <a
+          href={BOOKING_URL}
+          target="_blank"
+          rel="noopener noreferrer"
           onClick={onCtaClick}
           class="rounded-cta bg-verde px-5 py-2 text-[13px] font-bold text-bluenavy"
         >
           {cta.buttonLabel}
-        </button>
+        </a>
       </div>
     </div>
   );

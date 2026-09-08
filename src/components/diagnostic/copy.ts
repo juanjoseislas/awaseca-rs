@@ -6,6 +6,10 @@ import type { DimensionId } from "../../lib/diagnostic";
  * copy review pass, touches only this file.
  */
 
+/** Booking link both results-page CTA buttons open (Phase 3 booking flow). */
+export const BOOKING_URL =
+  "https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ0aHKWqbLMf42svEZXzojy3ki768MsIrpbFwju1zr1vddyrKG1CiBcxXWMDuZhd5GO0QN6OCDoq";
+
 export const NAV_COPY = {
   next: "Siguiente",
   back: "‹ Atrás",
