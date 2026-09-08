@@ -9,7 +9,7 @@ type FinalCTASectionProps = {
 
 export function FinalCTASection({ cta, onCtaClick }: FinalCTASectionProps) {
   return (
-    <section class="w-full bg-gradient-to-b from-[#021e33] to-bluenavy px-8 py-24">
+    <section class="w-full bg-[linear-gradient(225deg,var(--color-bluenavy),var(--color-azul))] px-8 py-24">
       <div class="mx-auto flex max-w-[680px] flex-col items-center gap-6 text-center">
         <span class="rounded-full border border-[rgba(102,204,153,0.25)] bg-[rgba(102,204,153,0.1)] px-5 py-1.5 text-[13px] text-[rgba(255,255,255,0.72)]">
           <span class="font-bold text-verde">200+</span> {RESULTS_COPY.finalCta.trustBadge}
