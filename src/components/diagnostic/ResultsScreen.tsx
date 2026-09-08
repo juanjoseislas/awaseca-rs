@@ -48,6 +48,13 @@ export function ResultsScreen({ result, answers, lead }: ResultsScreenProps) {
           .slice(0, 2)
       : [];
 
+  // A lone card in a 2-column grid stretches to fill its column, leaving an
+  // empty track beside it — cap its width to match a 2-up card and let the
+  // section's existing `items-center` center it instead.
+  const strengthCardCount = result.strengths.length > 0 ? result.strengths.length : fallbackTopDimensions.length;
+  const singleCardGridClass = "mt-9 grid w-full grid-cols-1 gap-6 min-[700px]:max-w-[calc(50%-0.75rem)]";
+  const twoUpGridClass = "mt-9 grid w-full grid-cols-1 gap-6 min-[700px]:grid-cols-2";
+
   return (
     <div class="w-full">
       <Topbar />
@@ -147,7 +154,7 @@ export function ResultsScreen({ result, answers, lead }: ResultsScreenProps) {
               </p>
             </>
           )}
-          <div class="mt-9 grid w-full grid-cols-1 gap-6 min-[700px]:grid-cols-2">
+          <div class={strengthCardCount === 1 ? singleCardGridClass : twoUpGridClass}>
             {result.strengths.length > 0
               ? result.strengths.map((dimension) => (
                   <InsightCard key={dimension.dimensionId} variant="strength" dimension={dimension} />
@@ -172,7 +179,7 @@ export function ResultsScreen({ result, answers, lead }: ResultsScreenProps) {
           <h2 class="mt-2.5 font-heading text-[34px] font-bold text-acento1 min-[700px]:text-[46px]">
             {result.gapsScenario === "gaps" ? RESULTS_COPY.gaps.title : RESULTS_COPY.gaps.consolidationTitle}
           </h2>
-          <div class="mt-9 grid w-full grid-cols-1 gap-6 min-[700px]:grid-cols-2">
+          <div class={result.gaps.length === 1 ? singleCardGridClass : twoUpGridClass}>
             {result.gaps.map((dimension) => (
               <InsightCard
                 key={dimension.dimensionId}
