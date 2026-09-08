@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 import type { DiagnosticInput, DiagnosticResult } from "../../lib/diagnostic";
-import { DIMENSION_IDS, DISCLAIMER_COPY, LEVEL_INTERPRETATION, Q16_INTERPRETATION, UNCERTAINTY_COPY } from "../../lib/diagnostic";
+import { DIMENSION_IDS, DISCLAIMER_COPY, LEVEL_INTERPRETATION, UNCERTAINTY_COPY } from "../../lib/diagnostic";
 import type { LeadFormValues } from "../../lib/diagnostic-submission";
-import { CompanyContextCard } from "./CompanyContextCard";
 import { DimensionBar } from "./DimensionBar";
 import { FinalCTASection } from "./FinalCTASection";
 import { InsightCard } from "./InsightCard";
@@ -19,7 +18,7 @@ type ResultsScreenProps = {
   lead: LeadFormValues;
 };
 
-export function ResultsScreen({ result, answers, lead }: ResultsScreenProps) {
+export function ResultsScreen({ result }: ResultsScreenProps) {
   const heroRef = useRef<HTMLDivElement>(null);
   const [showSticky, setShowSticky] = useState(false);
 
@@ -39,7 +38,6 @@ export function ResultsScreen({ result, answers, lead }: ResultsScreenProps) {
   };
 
   const levelCopy = LEVEL_INTERPRETATION[result.finalLevel];
-  const q16Interpretation = answers.q16 ? Q16_INTERPRETATION[answers.q16.optionId] : null;
 
   const fallbackTopDimensions =
     result.strengths.length === 0
@@ -211,18 +209,6 @@ export function ResultsScreen({ result, answers, lead }: ResultsScreenProps) {
           </div>
         </div>
       </section>
-
-      <section class="w-full bg-white px-8 py-14">
-        <CompanyContextCard lead={lead} answers={answers} />
-      </section>
-
-      {q16Interpretation ? (
-        <section class="w-full bg-grey px-8 py-10">
-          <div class="mx-auto max-w-[680px] text-center">
-            <p class="text-[15px] text-text-muted">{q16Interpretation}</p>
-          </div>
-        </section>
-      ) : null}
 
       <FinalCTASection cta={result.cta} onCtaClick={handleCtaClick} />
 
