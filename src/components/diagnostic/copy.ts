@@ -72,6 +72,8 @@ export const VALIDATION_COPY = {
   maxSelectionsHint: (max: number) => `Elige máximo ${smallNumberWord(max)} opciones.`,
   required: "Este campo es obligatorio.",
   invalidEmail: "Ingresa un correo electrónico válido.",
+  invalidPhone: "Ingresa solo números.",
+  tooLong: (max: number) => `Máximo ${max} caracteres.`,
 };
 
 export const RESULTS_COPY = {

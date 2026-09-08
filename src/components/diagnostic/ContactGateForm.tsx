@@ -2,6 +2,7 @@ import type { ComponentChildren } from "preact";
 import type { LeadFormValues } from "../../lib/diagnostic-submission";
 import { COMPANY_SIZE_OPTIONS, LEAD_GATE_COPY } from "./copy";
 import type { LeadFormErrors, SubmissionStatus } from "./types";
+import { FIELD_MAX_LENGTHS } from "./validation";
 
 type ContactGateFormProps = {
   values: LeadFormValues;
@@ -77,6 +78,7 @@ export function ContactGateForm({ values, errors, submission, onChange, onSubmit
           <input
             class={fieldClass(Boolean(errors.firstName))}
             value={values.firstName}
+            maxLength={FIELD_MAX_LENGTHS.firstName}
             onInput={(e) => onChange("firstName", (e.target as HTMLInputElement).value)}
           />
         </Field>
@@ -84,6 +86,7 @@ export function ContactGateForm({ values, errors, submission, onChange, onSubmit
           <input
             class={fieldClass(Boolean(errors.lastName))}
             value={values.lastName}
+            maxLength={FIELD_MAX_LENGTHS.lastName}
             onInput={(e) => onChange("lastName", (e.target as HTMLInputElement).value)}
           />
         </Field>
@@ -92,6 +95,7 @@ export function ContactGateForm({ values, errors, submission, onChange, onSubmit
             type="email"
             class={fieldClass(Boolean(errors.email))}
             value={values.email}
+            maxLength={FIELD_MAX_LENGTHS.email}
             onInput={(e) => onChange("email", (e.target as HTMLInputElement).value)}
           />
         </Field>
@@ -99,6 +103,7 @@ export function ContactGateForm({ values, errors, submission, onChange, onSubmit
           <input
             class={fieldClass(Boolean(errors.jobTitle))}
             value={values.jobTitle}
+            maxLength={FIELD_MAX_LENGTHS.jobTitle}
             onInput={(e) => onChange("jobTitle", (e.target as HTMLInputElement).value)}
           />
         </Field>
@@ -122,6 +127,7 @@ export function ContactGateForm({ values, errors, submission, onChange, onSubmit
           <input
             class={fieldClass(Boolean(errors.industry))}
             value={values.industry}
+            maxLength={FIELD_MAX_LENGTHS.industry}
             onInput={(e) => onChange("industry", (e.target as HTMLInputElement).value)}
           />
         </Field>
@@ -129,15 +135,23 @@ export function ContactGateForm({ values, errors, submission, onChange, onSubmit
           <input
             class={fieldClass(Boolean(errors.company))}
             value={values.company}
+            maxLength={FIELD_MAX_LENGTHS.company}
             onInput={(e) => onChange("company", (e.target as HTMLInputElement).value)}
           />
         </Field>
-        <Field label={LEAD_GATE_COPY.fields.phone} full>
+        <Field label={LEAD_GATE_COPY.fields.phone} error={errors.phone} full>
           <input
             type="tel"
-            class={fieldClass(false)}
+            inputMode="numeric"
+            class={fieldClass(Boolean(errors.phone))}
             value={values.phone ?? ""}
-            onInput={(e) => onChange("phone", (e.target as HTMLInputElement).value)}
+            maxLength={FIELD_MAX_LENGTHS.phone}
+            onInput={(e) => {
+              const target = e.target as HTMLInputElement;
+              const digitsOnly = target.value.replace(/\D/g, "");
+              if (digitsOnly !== target.value) target.value = digitsOnly;
+              onChange("phone", digitsOnly);
+            }}
           />
         </Field>
 

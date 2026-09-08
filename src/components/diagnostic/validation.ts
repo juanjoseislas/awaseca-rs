@@ -37,6 +37,24 @@ export function validateAnswerForQuestion(
 }
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_PATTERN = /^[0-9]*$/;
+
+/**
+ * Per-field max lengths (best-practice bounds, not part of the closed IPRS
+ * spec): name/job/industry/company fields cap at a generous 100 chars,
+ * email at RFC 5321's 254-char limit, phone at E.164's 15-digit limit.
+ * Enforced here so the server route (which imports this same function)
+ * rejects an oversized payload even if the client's `maxLength` is bypassed.
+ */
+export const FIELD_MAX_LENGTHS: Partial<Record<keyof LeadFormValues, number>> = {
+  firstName: 50,
+  lastName: 50,
+  email: 254,
+  company: 100,
+  jobTitle: 100,
+  industry: 100,
+  phone: 15,
+};
 
 export function validateLeadForm(values: LeadFormValues): LeadFormErrors {
   const errors: LeadFormErrors = {};
@@ -48,8 +66,21 @@ export function validateLeadForm(values: LeadFormValues): LeadFormErrors {
     }
   }
 
-  if (values.email && !EMAIL_PATTERN.test(values.email)) {
+  if (values.email && !errors.email && !EMAIL_PATTERN.test(values.email)) {
     errors.email = VALIDATION_COPY.invalidEmail;
+  }
+
+  if (values.phone && !PHONE_PATTERN.test(values.phone)) {
+    errors.phone = VALIDATION_COPY.invalidPhone;
+  }
+
+  for (const [field, maxLength] of Object.entries(FIELD_MAX_LENGTHS) as Array<
+    [keyof LeadFormValues, number]
+  >) {
+    const value = values[field];
+    if (value && value.length > maxLength && !errors[field]) {
+      errors[field] = VALIDATION_COPY.tooLong(maxLength);
+    }
   }
 
   return errors;
