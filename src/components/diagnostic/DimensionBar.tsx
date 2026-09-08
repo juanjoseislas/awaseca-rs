@@ -25,7 +25,7 @@ export function DimensionBar({ dimension, revealed = true, delayMs = 0 }: Dimens
       <span class="text-sm font-medium leading-tight text-acento1">{dimension.name}</span>
       <div class="h-2 overflow-hidden rounded-full bg-track">
         <div
-          class={`dimension-bar-fill h-full rounded-full transition-[width] duration-[700ms] ease-[cubic-bezier(.4,0,.2,1)] ${visual.barColorClass}`}
+          class={`dimension-bar-fill h-full rounded-full transition-[width] duration-[900ms] ease-[cubic-bezier(.4,0,.2,1)] ${visual.barColorClass}`}
           style={{ width: `${widthPercent}%`, transitionDelay: `${delayMs}ms` }}
         />
       </div>

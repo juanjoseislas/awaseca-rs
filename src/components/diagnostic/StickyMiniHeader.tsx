@@ -41,9 +41,15 @@ export function StickyMiniHeader({ displayIprs, finalLevel, cta, visible, onCtaC
           {cta.buttonLabel}
         </a>
       </div>
-      {/* Page scroll-progress fill — replaces the old static border-b-2. */}
-      <div class="h-[3px] w-full bg-[rgba(255,255,255,0.08)]">
-        <div class="h-full bg-gradient-to-r from-verde to-azul" style={{ width: `${scrollProgress}%` }} />
+      {/*
+        Page scroll-progress fill — replaces the old static border-b-2.
+        Solid verde (8.16:1 against bluenavy — the best of the palette's
+        accents here) instead of the original verde->azul gradient: at 4px
+        tall a two-hue gradient reads as washed-out rather than as a clear
+        single-color bar, which is what made it hard to spot.
+      */}
+      <div class="h-1 w-full bg-[rgba(255,255,255,0.12)]">
+        <div class="h-full bg-verde" style={{ width: `${scrollProgress}%` }} />
       </div>
     </div>
   );

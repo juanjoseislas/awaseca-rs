@@ -1,9 +1,14 @@
 import { useEffect, useRef, useState } from "preact/hooks";
 
-/** From step-transition-animation-spec.md — apply as-is, do not retune per-screen. */
+/**
+ * Originally from step-transition-animation-spec.md; enterDurationMs was
+ * retuned from 280 -> 500 after user testing reported the question-entrance
+ * animation was barely visible (see .enter-el's actual CSS duration in
+ * theme.css, which is what's really applied).
+ */
 export const MOTION = {
   exitDurationMs: 160,
-  enterDurationMs: 280,
+  enterDurationMs: 500,
   stagger: {
     eyebrow: 0,
     title: 30,
@@ -46,6 +51,13 @@ export function revealDelay(index: number): number {
 /**
  * Fires once when `ref`'s element first enters the viewport, then stops
  * observing — reveals should play once, not re-trigger on scroll back up.
+ *
+ * If the element is already in view at mount (a short page, a tall
+ * viewport), the IntersectionObserver's first callback can fire before the
+ * browser ever paints the hidden (opacity:0) state — the CSS transition
+ * then has nothing to transition *from* and silently skips, so the section
+ * just appears with no animation. Deferring the state flip by two
+ * animation frames guarantees the hidden state actually paints first.
  */
 export function useScrollReveal<T extends HTMLElement>() {
   const ref = useRef<T>(null);
@@ -57,7 +69,7 @@ export function useScrollReveal<T extends HTMLElement>() {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setRevealed(true);
+          requestAnimationFrame(() => requestAnimationFrame(() => setRevealed(true)));
           observer.disconnect();
         }
       },

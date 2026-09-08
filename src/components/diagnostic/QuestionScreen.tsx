@@ -1,3 +1,4 @@
+import { useEffect } from "preact/hooks";
 import type { Answer, Question } from "../../lib/diagnostic";
 import { DIMENSIONS } from "../../lib/diagnostic";
 import { CardChoiceField } from "./CardChoiceField";
@@ -36,6 +37,16 @@ export function QuestionScreen({
 }: QuestionScreenProps) {
   const isOpenText = question.type === "textarea";
   const eyebrow = question.dimension ? DIMENSIONS[question.dimension].name : STAGE_LABELS[stage];
+
+  // Fixes a mobile UX bug: without this, advancing to the next question
+  // (this component remounts fresh each time, keyed by questionId) kept
+  // the browser's current scroll position, so the new question rendered
+  // off-screen below the Siguiente button the user just tapped, forcing a
+  // manual scroll-up to read it.
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
+  }, []);
 
   const isEmpty = isOpenText
     ? !(value as string | undefined)?.trim()
