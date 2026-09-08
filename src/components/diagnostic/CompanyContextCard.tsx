@@ -36,7 +36,7 @@ export function CompanyContextCard({ lead, answers }: CompanyContextCardProps) {
   return (
     <div class="mx-auto flex max-w-[800px] flex-col items-start gap-5">
       <div class="w-full text-center">
-        <span class="text-[11px] font-bold uppercase tracking-wide text-text-eyebrow">
+        <span class="text-[11px] font-bold uppercase tracking-wide text-text-eyebrow min-[700px]:text-[13px]">
           {RESULTS_COPY.companyContext.eyebrow}
         </span>
         <h2 class="mt-2 font-heading text-2xl font-bold text-acento1">{RESULTS_COPY.companyContext.title}</h2>

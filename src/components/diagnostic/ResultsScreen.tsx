@@ -87,10 +87,10 @@ export function ResultsScreen({ result, answers, lead }: ResultsScreenProps) {
 
       <section class="w-full bg-white px-8 py-14">
         <div class="mx-auto flex max-w-[760px] flex-col items-center text-center">
-          <span class="text-[11px] font-bold uppercase tracking-wide text-text-eyebrow">
+          <span class="text-[11px] font-bold uppercase tracking-wide text-text-eyebrow min-[700px]:text-[13px]">
             {RESULTS_COPY.whatItMeans.eyebrow}
           </span>
-          <h2 class="mt-2.5 font-heading text-[32px] font-bold leading-tight text-acento1">{levelCopy.title}</h2>
+          <h2 class="mt-2.5 font-heading text-[32px] font-bold leading-tight text-acento1 min-[700px]:text-[46px]">{levelCopy.title}</h2>
           <div class="mt-7 w-full max-w-[680px] border-l-[3px] border-verde pl-6 text-left">
             <p class="whitespace-pre-line text-lg leading-relaxed text-bluenavy">{levelCopy.text}</p>
           </div>
@@ -99,10 +99,10 @@ export function ResultsScreen({ result, answers, lead }: ResultsScreenProps) {
 
       <section class="w-full bg-grey px-8 py-14">
         <div class="mx-auto flex max-w-[840px] flex-col items-center">
-          <span class="text-[11px] font-bold uppercase tracking-wide text-text-eyebrow">
+          <span class="text-[11px] font-bold uppercase tracking-wide text-text-eyebrow min-[700px]:text-[13px]">
             {RESULTS_COPY.dimensionMap.eyebrow}
           </span>
-          <h2 class="mt-2.5 font-heading text-[34px] font-bold text-acento1">{RESULTS_COPY.dimensionMap.title}</h2>
+          <h2 class="mt-2.5 font-heading text-[34px] font-bold text-acento1 min-[700px]:text-[46px]">{RESULTS_COPY.dimensionMap.title}</h2>
           <p class="mt-2 max-w-[520px] text-center text-[15px] text-text-muted">
             {RESULTS_COPY.dimensionMap.subtitle}
           </p>
@@ -129,17 +129,17 @@ export function ResultsScreen({ result, answers, lead }: ResultsScreenProps) {
         <div class="mx-auto flex max-w-[1100px] flex-col items-center">
           {result.strengths.length > 0 ? (
             <>
-              <span class="text-[11px] font-bold uppercase tracking-wide text-text-eyebrow">
+              <span class="text-[11px] font-bold uppercase tracking-wide text-text-eyebrow min-[700px]:text-[13px]">
                 {RESULTS_COPY.strengths.eyebrow}
               </span>
-              <h2 class="mt-2.5 font-heading text-[34px] font-bold text-acento1">{RESULTS_COPY.strengths.title}</h2>
+              <h2 class="mt-2.5 font-heading text-[34px] font-bold text-acento1 min-[700px]:text-[46px]">{RESULTS_COPY.strengths.title}</h2>
             </>
           ) : (
             <>
-              <span class="text-[11px] font-bold uppercase tracking-wide text-text-eyebrow">
+              <span class="text-[11px] font-bold uppercase tracking-wide text-text-eyebrow min-[700px]:text-[13px]">
                 {RESULTS_COPY.strengths.noStrengths.eyebrow}
               </span>
-              <h2 class="mt-2.5 font-heading text-[34px] font-bold text-acento1">
+              <h2 class="mt-2.5 font-heading text-[34px] font-bold text-acento1 min-[700px]:text-[46px]">
                 {RESULTS_COPY.strengths.noStrengths.title}
               </h2>
               <p class="mt-3 max-w-[680px] text-center text-[15px] text-text-muted">
@@ -166,10 +166,10 @@ export function ResultsScreen({ result, answers, lead }: ResultsScreenProps) {
 
       <section class="w-full bg-grey px-8 py-14">
         <div class="mx-auto flex max-w-[1100px] flex-col items-center">
-          <span class="text-[11px] font-bold uppercase tracking-wide text-text-eyebrow">
+          <span class="text-[11px] font-bold uppercase tracking-wide text-text-eyebrow min-[700px]:text-[13px]">
             {result.gapsScenario === "gaps" ? RESULTS_COPY.gaps.eyebrow : RESULTS_COPY.gaps.consolidationEyebrow}
           </span>
-          <h2 class="mt-2.5 font-heading text-[34px] font-bold text-acento1">
+          <h2 class="mt-2.5 font-heading text-[34px] font-bold text-acento1 min-[700px]:text-[46px]">
             {result.gapsScenario === "gaps" ? RESULTS_COPY.gaps.title : RESULTS_COPY.gaps.consolidationTitle}
           </h2>
           <div class="mt-9 grid w-full grid-cols-1 gap-6 min-[700px]:grid-cols-2">
@@ -187,10 +187,10 @@ export function ResultsScreen({ result, answers, lead }: ResultsScreenProps) {
 
       <section class="w-full bg-acento1 px-8 py-14">
         <div class="mx-auto flex max-w-[800px] flex-col items-center">
-          <span class="text-[11px] font-bold uppercase tracking-wide text-[rgba(255,255,255,0.85)]">
+          <span class="text-[11px] font-bold uppercase tracking-wide text-[rgba(255,255,255,0.85)] min-[700px]:text-[13px]">
             {RESULTS_COPY.recommendations.eyebrow}
           </span>
-          <h2 class="mt-2.5 font-heading text-[42px] font-bold text-white">{RESULTS_COPY.recommendations.title}</h2>
+          <h2 class="mt-2.5 font-heading text-[42px] font-bold text-white min-[700px]:text-[46px]">{RESULTS_COPY.recommendations.title}</h2>
           <div class="mt-10 flex w-full flex-col gap-3.5">
             {result.recommendations.map((recommendation, index) => (
               <RecommendationCard key={recommendation.id} recommendation={recommendation} index={index} />

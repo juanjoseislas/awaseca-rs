@@ -52,8 +52,8 @@ export function LevelScale({ iprs, finalLevel }: LevelScaleProps) {
           <span
             key={level}
             class={[
-              "flex-1 text-center text-[9px] uppercase tracking-wide",
-              index === activeIndex ? "font-bold text-white" : "text-[rgba(255,255,255,0.4)]",
+              "flex-1 text-center text-[13px] uppercase tracking-wide",
+              index === activeIndex ? "font-bold text-white" : "text-[rgba(255,255,255,0.82)]",
             ].join(" ")}
           >
             {level}

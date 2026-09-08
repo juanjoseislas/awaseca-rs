@@ -14,7 +14,7 @@ export function FinalCTASection({ cta, onCtaClick }: FinalCTASectionProps) {
         <span class="rounded-full border border-[rgba(102,204,153,0.25)] bg-[rgba(102,204,153,0.1)] px-5 py-1.5 text-[13px] text-[rgba(255,255,255,0.72)]">
           <span class="font-bold text-verde">200+</span> {RESULTS_COPY.finalCta.trustBadge}
         </span>
-        <p class="text-[11px] font-bold uppercase tracking-wide text-verde">{RESULTS_COPY.finalCta.eyebrow}</p>
+        <p class="text-[11px] font-bold uppercase tracking-wide text-verde min-[700px]:text-[13px]">{RESULTS_COPY.finalCta.eyebrow}</p>
         <h2 class="font-heading text-[46px] font-bold leading-[52.9px] tracking-[-0.46px] text-white">
           {cta.title}
         </h2>
