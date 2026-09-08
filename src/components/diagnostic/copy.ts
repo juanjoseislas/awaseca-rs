@@ -10,6 +10,16 @@ import type { DimensionId } from "../../lib/diagnostic";
 export const BOOKING_URL =
   "https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ0aHKWqbLMf42svEZXzojy3ki768MsIrpbFwju1zr1vddyrKG1CiBcxXWMDuZhd5GO0QN6OCDoq";
 
+/** Link the "Compartir mis resultados" share action points back to. */
+export const SHARE_URL = "https://www.awaseca.com/reporte-de-sostenibilidad";
+
+export const SHARE_COPY = {
+  title: "Diagnóstico de preparación para Reportes de Sostenibilidad — Awaseca",
+  text: (finalLevel: string, displayIprs: number) =>
+    `Obtuve el nivel ${finalLevel} (${displayIprs}/100) en el diagnóstico de preparación para Reportes de Sostenibilidad de Awaseca. Descúbrelo tú también:`,
+  copiedLabel: "¡Enlace copiado!",
+};
+
 export const NAV_COPY = {
   next: "Siguiente",
   back: "‹ Atrás",

@@ -1,13 +1,39 @@
-import type { CTAResult } from "../../lib/diagnostic";
+import { useState } from "preact/hooks";
+import type { CTAResult, Level } from "../../lib/diagnostic";
 import ctaArrowUrl from "../../assets/diagnostic/cta-arrow-icon.svg?url";
-import { BOOKING_URL, RESULTS_COPY } from "./copy";
+import { BOOKING_URL, RESULTS_COPY, SHARE_COPY, SHARE_URL } from "./copy";
 
 type FinalCTASectionProps = {
   cta: CTAResult;
+  finalLevel: Level;
+  displayIprs: number;
   onCtaClick: () => void;
 };
 
-export function FinalCTASection({ cta, onCtaClick }: FinalCTASectionProps) {
+export function FinalCTASection({ cta, finalLevel, displayIprs, onCtaClick }: FinalCTASectionProps) {
+  const [copied, setCopied] = useState(false);
+
+  const handleShare = async () => {
+    const text = SHARE_COPY.text(finalLevel, displayIprs);
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: SHARE_COPY.title, text, url: SHARE_URL });
+      } catch {
+        // User cancelled the share sheet or it failed — nothing to recover.
+      }
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(`${text} ${SHARE_URL}`);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard unavailable (e.g. insecure context) — no further fallback.
+    }
+  };
+
   return (
     <section class="w-full bg-[linear-gradient(225deg,var(--color-bluenavy),var(--color-azul))] px-8 py-24">
       <div class="mx-auto flex max-w-[680px] flex-col items-center gap-6 text-center">
@@ -36,9 +62,13 @@ export function FinalCTASection({ cta, onCtaClick }: FinalCTASectionProps) {
           </a>
           <p class="text-xs text-[rgba(255,255,255,0.42)]">{RESULTS_COPY.finalCta.disclaimerNote}</p>
         </div>
-        <a href="#" class="mt-2 text-[13px] text-[rgba(255,255,255,0.38)]">
-          {RESULTS_COPY.finalCta.shareLink}
-        </a>
+        <button
+          type="button"
+          onClick={handleShare}
+          class="mt-2 text-[13px] text-[rgba(255,255,255,0.38)] underline-offset-2 hover:underline"
+        >
+          {copied ? SHARE_COPY.copiedLabel : RESULTS_COPY.finalCta.shareLink}
+        </button>
       </div>
     </section>
   );

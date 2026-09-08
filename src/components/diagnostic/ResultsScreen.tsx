@@ -210,7 +210,12 @@ export function ResultsScreen({ result }: ResultsScreenProps) {
         </div>
       </section>
 
-      <FinalCTASection cta={result.cta} onCtaClick={handleCtaClick} />
+      <FinalCTASection
+        cta={result.cta}
+        finalLevel={result.finalLevel}
+        displayIprs={result.displayIprs}
+        onCtaClick={handleCtaClick}
+      />
 
       <footer class="w-full bg-grey px-8 py-8 text-center">
         <p class="text-xs font-bold uppercase tracking-wide text-text-muted">{DISCLAIMER_COPY.title}</p>
