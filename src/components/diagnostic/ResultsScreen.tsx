@@ -11,6 +11,13 @@ import { ScoreGauge } from "./ScoreGauge";
 import { StickyMiniHeader } from "./StickyMiniHeader";
 import { Topbar } from "./Topbar";
 import { RESULTS_COPY } from "./copy";
+import {
+  RESULTS_REVEAL_STAGGER,
+  revealDelay,
+  useCountUp,
+  usePrefersReducedMotion,
+  useScrollReveal,
+} from "./motion";
 
 type ResultsScreenProps = {
   result: DiagnosticResult;
@@ -36,6 +43,23 @@ export function ResultsScreen({ result }: ResultsScreenProps) {
     // Phase 3 will wire this to a real booking/contact flow.
     console.info("[diagnostic] CTA clicked", result.cta.route);
   };
+
+  const prefersReducedMotion = usePrefersReducedMotion();
+  // Hero is above the fold, so it animates in on mount rather than on
+  // scroll — RESULTS_REVEAL_STAGGER.heroVisual times the count-up/gauge to
+  // start right as the score number's block finishes fading in.
+  const animatedDisplayIprs = useCountUp(result.displayIprs, {
+    durationMs: 900,
+    delayMs: RESULTS_REVEAL_STAGGER.heroVisual,
+    disabled: prefersReducedMotion,
+  });
+
+  const uncertaintyReveal = useScrollReveal<HTMLElement>();
+  const whatItMeansReveal = useScrollReveal<HTMLElement>();
+  const dimensionMapReveal = useScrollReveal<HTMLElement>();
+  const strengthsReveal = useScrollReveal<HTMLElement>();
+  const gapsReveal = useScrollReveal<HTMLElement>();
+  const recommendationsReveal = useScrollReveal<HTMLElement>();
 
   const levelCopy = LEVEL_INTERPRETATION[result.finalLevel];
 
@@ -66,32 +90,49 @@ export function ResultsScreen({ result }: ResultsScreenProps) {
 
       <section ref={heroRef} class="w-full bg-acento1 px-8 pb-14 pt-16">
         <div class="mx-auto flex max-w-[680px] flex-col items-center gap-1 text-center">
-          <span class="mb-3 rounded-full bg-verde px-4.5 py-1 text-xs font-bold uppercase tracking-wide text-bluenavy">
+          <span
+            class="enter-el mb-3 rounded-full bg-verde px-4.5 py-1 text-xs font-bold uppercase tracking-wide text-bluenavy"
+            style={{ animationDelay: `${RESULTS_REVEAL_STAGGER.headline}ms` }}
+          >
             {result.finalLevel}
           </span>
-          <p class="text-[13px] font-semibold uppercase tracking-wide text-[rgba(255,255,255,0.85)]">
+          <p
+            class="enter-el text-[13px] font-semibold uppercase tracking-wide text-[rgba(255,255,255,0.85)]"
+            style={{ animationDelay: `${RESULTS_REVEAL_STAGGER.subhead}ms` }}
+          >
             {RESULTS_COPY.hero.levelLabel}
           </p>
-          <div class="relative flex h-24 items-baseline justify-center">
-            <span class="text-[96px] font-bold leading-none text-white">{result.displayIprs}</span>
+          <div
+            class="enter-el relative flex h-24 items-baseline justify-center"
+            style={{ animationDelay: `${RESULTS_REVEAL_STAGGER.heroVisual}ms` }}
+          >
+            <span class="text-[96px] font-bold leading-none text-white">{animatedDisplayIprs}</span>
             <span class="ml-1 text-4xl font-normal text-[rgba(255,255,255,0.75)]">/ 100</span>
           </div>
-          <ScoreGauge score={result.iprs} />
-          <LevelScale iprs={result.iprs} finalLevel={result.finalLevel} />
+          <div class="enter-el" style={{ animationDelay: `${RESULTS_REVEAL_STAGGER.heroVisual}ms` }}>
+            <ScoreGauge score={result.iprs} />
+          </div>
+          <div class="enter-el" style={{ animationDelay: `${RESULTS_REVEAL_STAGGER.heroVisual}ms` }}>
+            <LevelScale iprs={result.iprs} finalLevel={result.finalLevel} />
+          </div>
         </div>
       </section>
 
       {result.uncertaintyFlag ? (
-        <section class="w-full bg-white px-8 pt-8">
-          <div class="mx-auto max-w-[680px] rounded-card bg-[#fff8e6] px-6 py-4 text-center">
+        <section ref={uncertaintyReveal.ref} class="w-full bg-white px-8 pt-8">
+          <div
+            class={`reveal mx-auto max-w-[680px] rounded-card bg-[#fff8e6] px-6 py-4 text-center ${uncertaintyReveal.revealed ? "reveal-visible" : ""}`}
+          >
             <p class="text-sm font-bold text-[#8a6d1f]">{UNCERTAINTY_COPY.title}</p>
             <p class="mt-1 text-sm text-[#8a6d1f]">{UNCERTAINTY_COPY.text}</p>
           </div>
         </section>
       ) : null}
 
-      <section class="w-full bg-white px-8 py-14">
-        <div class="mx-auto flex max-w-[760px] flex-col items-center text-center">
+      <section ref={whatItMeansReveal.ref} class="w-full bg-white px-8 py-14">
+        <div
+          class={`reveal mx-auto flex max-w-[760px] flex-col items-center text-center ${whatItMeansReveal.revealed ? "reveal-visible" : ""}`}
+        >
           <span class="text-[11px] font-bold uppercase tracking-wide text-text-eyebrow min-[700px]:text-[13px]">
             {RESULTS_COPY.whatItMeans.eyebrow}
           </span>
@@ -108,9 +149,11 @@ export function ResultsScreen({ result }: ResultsScreenProps) {
         </div>
       </section>
 
-      <section class="w-full bg-grey px-8 py-14">
+      <section ref={dimensionMapReveal.ref} class="w-full bg-grey px-8 py-14">
         <div class="mx-auto flex max-w-[840px] flex-col items-center">
-          <div class="flex flex-col items-center text-center">
+          <div
+            class={`reveal flex flex-col items-center text-center ${dimensionMapReveal.revealed ? "reveal-visible" : ""}`}
+          >
             <span class="text-[11px] font-bold uppercase tracking-wide text-text-eyebrow min-[700px]:text-[13px]">
               {RESULTS_COPY.dimensionMap.eyebrow}
             </span>
@@ -131,16 +174,23 @@ export function ResultsScreen({ result }: ResultsScreenProps) {
             </span>
           </div>
           <div class="mt-2 w-full">
-            {DIMENSION_IDS.map((id) => (
-              <DimensionBar key={id} dimension={result.dimensions[id]} />
+            {DIMENSION_IDS.map((id, index) => (
+              <DimensionBar
+                key={id}
+                dimension={result.dimensions[id]}
+                revealed={dimensionMapReveal.revealed}
+                delayMs={revealDelay(index)}
+              />
             ))}
           </div>
         </div>
       </section>
 
-      <section class="w-full bg-white px-8 py-14">
+      <section ref={strengthsReveal.ref} class="w-full bg-white px-8 py-14">
         <div class="mx-auto flex max-w-[1100px] flex-col items-center">
-          <div class="flex flex-col items-center text-center">
+          <div
+            class={`reveal flex flex-col items-center text-center ${strengthsReveal.revealed ? "reveal-visible" : ""}`}
+          >
             {result.strengths.length > 0 ? (
               <>
                 <span class="text-[11px] font-bold uppercase tracking-wide text-text-eyebrow min-[700px]:text-[13px]">
@@ -164,24 +214,32 @@ export function ResultsScreen({ result }: ResultsScreenProps) {
           </div>
           <div class={strengthCardCount === 1 ? singleCardGridClass : twoUpGridClass}>
             {result.strengths.length > 0
-              ? result.strengths.map((dimension) => (
-                  <InsightCard key={dimension.dimensionId} variant="strength" dimension={dimension} />
+              ? result.strengths.map((dimension, index) => (
+                  <InsightCard
+                    key={dimension.dimensionId}
+                    variant="strength"
+                    dimension={dimension}
+                    revealed={strengthsReveal.revealed}
+                    delayMs={revealDelay(index)}
+                  />
                 ))
-              : fallbackTopDimensions.map((dimension) => (
+              : fallbackTopDimensions.map((dimension, index) => (
                   <InsightCard
                     key={dimension.dimensionId}
                     variant="reference"
                     referenceContext="strengths"
                     dimension={dimension}
+                    revealed={strengthsReveal.revealed}
+                    delayMs={revealDelay(index)}
                   />
                 ))}
           </div>
         </div>
       </section>
 
-      <section class="w-full bg-grey px-8 py-14">
+      <section ref={gapsReveal.ref} class="w-full bg-grey px-8 py-14">
         <div class="mx-auto flex max-w-[1100px] flex-col items-center">
-          <div class="text-center">
+          <div class={`reveal text-center ${gapsReveal.revealed ? "reveal-visible" : ""}`}>
             <span class="text-[11px] font-bold uppercase tracking-wide text-text-eyebrow min-[700px]:text-[13px]">
               {result.gapsScenario === "gaps" ? RESULTS_COPY.gaps.eyebrow : RESULTS_COPY.gaps.consolidationEyebrow}
             </span>
@@ -190,21 +248,23 @@ export function ResultsScreen({ result }: ResultsScreenProps) {
             </h2>
           </div>
           <div class={result.gaps.length === 1 ? singleCardGridClass : twoUpGridClass}>
-            {result.gaps.map((dimension) => (
+            {result.gaps.map((dimension, index) => (
               <InsightCard
                 key={dimension.dimensionId}
                 variant={result.gapsScenario === "gaps" ? "gap" : "reference"}
                 referenceContext="gaps"
                 dimension={dimension}
+                revealed={gapsReveal.revealed}
+                delayMs={revealDelay(index)}
               />
             ))}
           </div>
         </div>
       </section>
 
-      <section class="w-full bg-acento1 px-8 py-14">
+      <section ref={recommendationsReveal.ref} class="w-full bg-acento1 px-8 py-14">
         <div class="mx-auto flex max-w-[800px] flex-col items-center">
-          <div class="text-center">
+          <div class={`reveal text-center ${recommendationsReveal.revealed ? "reveal-visible" : ""}`}>
             <span class="text-[11px] font-bold uppercase tracking-wide text-[rgba(255,255,255,0.85)] min-[700px]:text-[13px]">
               {RESULTS_COPY.recommendations.eyebrow}
             </span>
@@ -212,7 +272,12 @@ export function ResultsScreen({ result }: ResultsScreenProps) {
           </div>
           <div class="mt-10 flex w-full flex-col gap-3.5">
             {result.recommendations.map((recommendation, index) => (
-              <RecommendationCard key={recommendation.id} recommendation={recommendation} index={index} />
+              <RecommendationCard
+                key={recommendation.id}
+                recommendation={recommendation}
+                index={index}
+                revealed={recommendationsReveal.revealed}
+              />
             ))}
           </div>
         </div>

@@ -104,6 +104,7 @@ export function DiagnosticApp() {
       <div class="w-full">
         <Topbar />
         <QuestionScreen
+          key={questionId}
           question={question}
           value={value}
           fieldError={state.fieldError}

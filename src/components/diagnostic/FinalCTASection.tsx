@@ -2,6 +2,7 @@ import { useState } from "preact/hooks";
 import type { CTAResult, Level } from "../../lib/diagnostic";
 import ctaArrowUrl from "../../assets/diagnostic/cta-arrow-icon.svg?url";
 import { BOOKING_URL, RESULTS_COPY, SHARE_COPY, SHARE_URL } from "./copy";
+import { useScrollReveal } from "./motion";
 
 type FinalCTASectionProps = {
   cta: CTAResult;
@@ -12,6 +13,7 @@ type FinalCTASectionProps = {
 
 export function FinalCTASection({ cta, finalLevel, displayIprs, onCtaClick }: FinalCTASectionProps) {
   const [copied, setCopied] = useState(false);
+  const { ref, revealed } = useScrollReveal<HTMLElement>();
 
   const handleShare = async () => {
     const text = SHARE_COPY.text(finalLevel, displayIprs);
@@ -35,8 +37,13 @@ export function FinalCTASection({ cta, finalLevel, displayIprs, onCtaClick }: Fi
   };
 
   return (
-    <section class="w-full bg-[linear-gradient(225deg,var(--color-bluenavy),var(--color-azul))] px-8 py-24">
-      <div class="mx-auto flex max-w-[680px] flex-col items-center gap-6 text-center">
+    <section
+      ref={ref}
+      class="w-full bg-[linear-gradient(225deg,var(--color-bluenavy),var(--color-azul))] px-8 py-24"
+    >
+      <div
+        class={`reveal mx-auto flex max-w-[680px] flex-col items-center gap-6 text-center ${revealed ? "reveal-visible" : ""}`}
+      >
         <span class="rounded-full border border-[rgba(102,204,153,0.25)] bg-[rgba(102,204,153,0.1)] px-5 py-1.5 text-[13px] text-[rgba(255,255,255,0.72)]">
           <span class="font-bold text-verde">200+</span> {RESULTS_COPY.finalCta.trustBadge}
         </span>
@@ -55,7 +62,7 @@ export function FinalCTASection({ cta, finalLevel, displayIprs, onCtaClick }: Fi
             target="_blank"
             rel="noopener noreferrer"
             onClick={onCtaClick}
-            class="flex items-center gap-2.5 rounded-cta bg-verde px-14 py-4 text-[18px] font-bold text-bluenavy shadow-[0_4px_9px_rgba(102,204,153,0.22)]"
+            class="hover-grow press-scale cta-pulse flex items-center gap-2.5 rounded-cta bg-verde px-14 py-4 text-[18px] font-bold text-bluenavy shadow-[0_4px_9px_rgba(102,204,153,0.22)]"
           >
             {cta.buttonLabel}
             <img src={ctaArrowUrl} alt="" class="size-[18px]" />
@@ -67,7 +74,7 @@ export function FinalCTASection({ cta, finalLevel, displayIprs, onCtaClick }: Fi
         <button
           type="button"
           onClick={handleShare}
-          class="mt-2 rounded-full bg-bluenavy/60 px-3 py-1 text-[13px] text-[rgba(255,255,255,0.85)] underline-offset-2 hover:underline"
+          class="link-underline mt-2 rounded-full bg-bluenavy/60 px-3 py-1 text-[13px] text-[rgba(255,255,255,0.85)]"
         >
           {copied ? SHARE_COPY.copiedLabel : RESULTS_COPY.finalCta.shareLink}
         </button>

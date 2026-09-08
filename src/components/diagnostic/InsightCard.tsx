@@ -28,9 +28,18 @@ type InsightCardProps = {
    */
   referenceContext?: "strengths" | "gaps";
   dimension: DimensionLike;
+  /** True once the parent section has scrolled into view. */
+  revealed?: boolean;
+  delayMs?: number;
 };
 
-export function InsightCard({ variant, referenceContext, dimension }: InsightCardProps) {
+export function InsightCard({
+  variant,
+  referenceContext,
+  dimension,
+  revealed = true,
+  delayMs = 0,
+}: InsightCardProps) {
   const isReference = variant === "reference";
   const isPositive = isReference ? dimension.score >= 70 : variant === "strength";
 
@@ -52,7 +61,8 @@ export function InsightCard({ variant, referenceContext, dimension }: InsightCar
 
   return (
     <div
-      class={`flex flex-col gap-3.5 rounded-card border-t-[3px] p-7 shadow-[0_1px_2px_rgba(64,104,130,0.06)] ${borderColorClass} ${bgColorClass}`}
+      class={`reveal-scale hover-lift flex flex-col gap-3.5 rounded-card border-t-[3px] p-7 shadow-[0_1px_2px_rgba(64,104,130,0.06)] ${revealed ? "reveal-visible" : ""} ${borderColorClass} ${bgColorClass}`}
+      style={{ "--reveal-delay": `${delayMs}ms` }}
     >
       <div class="flex items-center justify-between">
         <img src={icon} alt="" class="size-8" />

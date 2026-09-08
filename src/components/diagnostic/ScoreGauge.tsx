@@ -1,3 +1,5 @@
+import { useCountUp, usePrefersReducedMotion } from "./motion";
+
 type ScoreGaugeProps = {
   score: number; // 0-100, the internal decimal IPRS
 };
@@ -29,7 +31,12 @@ function arcPath(startAngleDeg: number, endAngleDeg: number) {
  * static Figma export (fixed at 63) so every score renders correctly.
  */
 export function ScoreGauge({ score }: ScoreGaugeProps) {
-  const clamped = Math.max(0, Math.min(100, score));
+  const prefersReducedMotion = usePrefersReducedMotion();
+  // Draws the arc in on mount, synced with the hero's IPRS count-up
+  // (same 900ms/160ms-delay timing as RESULTS_REVEAL_STAGGER.heroVisual).
+  const animatedScore = useCountUp(score, { durationMs: 900, delayMs: 160, disabled: prefersReducedMotion, round: false });
+
+  const clamped = Math.max(0, Math.min(100, animatedScore));
   const currentAngle = 180 - (clamped / 100) * 180;
   const tip = pointOnArc(currentAngle);
 

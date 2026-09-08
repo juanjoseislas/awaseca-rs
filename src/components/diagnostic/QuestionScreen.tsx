@@ -78,7 +78,11 @@ export function QuestionScreen({
       <div class="mt-4 flex flex-col gap-2">
         <div class="flex items-center justify-between">
           {!isFirst ? (
-            <button type="button" onClick={onBack} class="text-sm font-medium text-silver hover:text-acento1">
+            <button
+              type="button"
+              onClick={onBack}
+              class="link-underline text-sm font-medium text-silver transition-colors hover:text-acento1"
+            >
               {NAV_COPY.back}
             </button>
           ) : (
@@ -87,14 +91,18 @@ export function QuestionScreen({
           <button
             type="button"
             onClick={onNext}
-            class="rounded-button bg-acento1 px-8 py-3 text-sm font-bold text-white transition-colors hover:bg-[#345266]"
+            class="press-scale rounded-button bg-acento1 px-8 py-3 text-sm font-bold text-white transition-colors hover:bg-[#345266]"
           >
             {nextLabel}
           </button>
         </div>
         {showSkipLink ? (
           <div class="flex justify-end">
-            <button type="button" onClick={onNext} class="text-sm font-medium text-silver hover:text-acento1">
+            <button
+              type="button"
+              onClick={onNext}
+              class="link-underline text-sm font-medium text-silver transition-colors hover:text-acento1"
+            >
               {NAV_COPY.skip}
             </button>
           </div>

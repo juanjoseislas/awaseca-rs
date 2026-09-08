@@ -1,5 +1,6 @@
 import type { CTAResult } from "../../lib/diagnostic";
 import { BOOKING_URL } from "./copy";
+import { useScrollProgress } from "./motion";
 
 type StickyMiniHeaderProps = {
   displayIprs: number;
@@ -10,10 +11,12 @@ type StickyMiniHeaderProps = {
 };
 
 export function StickyMiniHeader({ displayIprs, finalLevel, cta, visible, onCtaClick }: StickyMiniHeaderProps) {
+  const scrollProgress = useScrollProgress();
+
   return (
     <div
       class={[
-        "fixed inset-x-0 top-0 z-50 border-b-2 border-verde bg-bluenavy transition-transform duration-300",
+        "fixed inset-x-0 top-0 z-50 bg-bluenavy transition-transform duration-300",
         visible ? "translate-y-0" : "-translate-y-full",
       ].join(" ")}
       aria-hidden={!visible}
@@ -33,10 +36,14 @@ export function StickyMiniHeader({ displayIprs, finalLevel, cta, visible, onCtaC
           target="_blank"
           rel="noopener noreferrer"
           onClick={onCtaClick}
-          class="rounded-cta bg-verde px-5 py-2 text-center text-[13px] font-bold text-bluenavy"
+          class="press-scale rounded-cta bg-verde px-5 py-2 text-center text-[13px] font-bold text-bluenavy transition-colors duration-150 hover:bg-verde/80"
         >
           {cta.buttonLabel}
         </a>
+      </div>
+      {/* Page scroll-progress fill — replaces the old static border-b-2. */}
+      <div class="h-[3px] w-full bg-[rgba(255,255,255,0.08)]">
+        <div class="h-full bg-gradient-to-r from-verde to-azul" style={{ width: `${scrollProgress}%` }} />
       </div>
     </div>
   );

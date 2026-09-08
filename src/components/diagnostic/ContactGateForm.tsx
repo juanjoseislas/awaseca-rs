@@ -159,7 +159,7 @@ export function ContactGateForm({ values, errors, submission, onChange, onSubmit
           <button
             type="submit"
             disabled={isSubmitting}
-            class="w-full rounded-button bg-acento1 px-8 py-4 text-base font-bold text-white transition-colors hover:bg-[#345266] disabled:cursor-not-allowed disabled:opacity-60"
+            class="press-scale w-full rounded-button bg-acento1 px-8 py-4 text-base font-bold text-white shadow-[0_0_0_rgba(64,104,130,0)] transition-[background-color,box-shadow] duration-300 hover:bg-[#345266] hover:shadow-[0_10px_22px_rgba(64,104,130,0.35)] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isSubmitting ? LEAD_GATE_COPY.submittingLabel : LEAD_GATE_COPY.submitLabel}
           </button>

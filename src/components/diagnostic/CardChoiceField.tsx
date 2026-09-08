@@ -47,7 +47,7 @@ export function CardChoiceField({ question, value, onSelectSingle, onToggleMulti
             // dos opciones" message instead of silently doing nothing.
             onClick={() => (isMultiple ? onToggleMulti(answer) : onSelectSingle(answer))}
             class={[
-              "enter-el flex w-full items-center gap-4 rounded-card border-[1.5px] px-5 py-4 text-left text-base transition-colors",
+              "enter-el press-scale flex w-full items-center gap-4 rounded-card border-[1.5px] px-5 py-4 text-left text-base transition-colors",
               isSelected
                 ? "border-verde bg-cell-green font-semibold text-acento1"
                 : "border-[#e2e2e2] bg-white text-acento1 hover:border-azul",
@@ -58,7 +58,7 @@ export function CardChoiceField({ question, value, onSelectSingle, onToggleMulti
             <span class="flex-1">{option.label}</span>
             <span class="shrink-0" aria-hidden="true">
               {isSelected ? (
-                <img src={checkIconUrl} alt="" class="size-6" />
+                <img src={checkIconUrl} alt="" class="icon-pop size-6" />
               ) : (
                 <span class="block size-6 rounded-full border-2 border-[#c7c7c7]" />
               )}

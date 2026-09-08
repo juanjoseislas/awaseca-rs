@@ -1,17 +1,23 @@
 import type { Recommendation } from "../../lib/diagnostic";
 import { getRecommendationBadge } from "./recommendation-badge";
+import { revealDelay } from "./motion";
 
 type RecommendationCardProps = {
   recommendation: Recommendation;
   index: number;
+  /** True once the parent section has scrolled into view. */
+  revealed?: boolean;
 };
 
-export function RecommendationCard({ recommendation, index }: RecommendationCardProps) {
+export function RecommendationCard({ recommendation, index, revealed = true }: RecommendationCardProps) {
   const badge = getRecommendationBadge(recommendation.id);
   const number = String(index + 1).padStart(2, "0");
 
   return (
-    <div class="flex w-full gap-5 rounded-card border-l-[3px] border-verde bg-[rgba(255,255,255,0.08)] px-7 py-6">
+    <div
+      class={`reveal hover-lift flex w-full gap-5 rounded-card border-l-[3px] border-verde bg-[rgba(255,255,255,0.08)] px-7 py-6 ${revealed ? "reveal-visible" : ""}`}
+      style={{ "--reveal-delay": `${revealDelay(index)}ms` }}
+    >
       <span class="shrink-0 text-[44px] font-extralight leading-none text-[rgba(255,255,255,0.45)]">
         {number}
       </span>
