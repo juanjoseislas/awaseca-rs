@@ -97,7 +97,7 @@ export const RESULTS_COPY = {
   whyThisLevel: { title: "¿Por qué este nivel?" },
   dimensionMap: {
     eyebrow: "Mapa de preparación",
-    title: "Tu desempeño por dimensión",
+    title: "Tu madurez por dimensión",
     subtitle: "Basado en tus respuestas, este es cómo se distribuye tu nivel de preparación en cada área.",
     legend: {
       strength: "Fortaleza (≥70)",
