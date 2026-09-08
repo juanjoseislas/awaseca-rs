@@ -61,15 +61,20 @@ export function generateCTA(context: GenerateCTAContext): CTAResult {
   const modifier = resolveModifier(dimensions);
   const tone = LEVEL_TONE[finalLevel];
 
-  const bodyParts = [base.body];
-  if (emphasis) bodyParts.push(`Un énfasis particular: ${emphasis}.`);
-  if (objectives.length > 0) bodyParts.push(`Enfocado en: ${objectives.join(", ")}.`);
-  bodyParts.push(`Próximo paso sugerido: ${tone}.`);
+  const introParts = [base.body];
+  if (emphasis) introParts.push(`Un énfasis particular: ${emphasis}.`);
+
+  const bodyLines = [introParts.join(" ")];
+  if (objectives.length > 0) bodyLines.push(`Enfocado en: ${objectives.join(", ")}.`);
+  bodyLines.push(`Próximo paso sugerido: ${tone}.`);
 
   return {
     route,
     title: base.title,
-    body: bodyParts.join(" "),
+    // Each line renders on its own row — callers must render this with
+    // whitespace-pre-line (or equivalent) rather than collapsing it into
+    // one paragraph.
+    body: bodyLines.join("\n"),
     modifier,
     buttonLabel: base.buttonLabel,
   };

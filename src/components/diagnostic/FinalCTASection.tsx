@@ -18,7 +18,7 @@ export function FinalCTASection({ cta, onCtaClick }: FinalCTASectionProps) {
         <h2 class="font-heading text-[46px] font-bold leading-[52.9px] tracking-[-0.46px] text-white">
           {cta.title}
         </h2>
-        <p class="text-[17px] leading-[28.9px] text-[rgba(255,255,255,0.78)]">{cta.body}</p>
+        <p class="whitespace-pre-line text-[17px] leading-[28.9px] text-[rgba(255,255,255,0.78)]">{cta.body}</p>
         {cta.modifier ? (
           <p class="text-[17px] leading-[28.9px] text-[rgba(255,255,255,0.6)]">{cta.modifier}</p>
         ) : null}
