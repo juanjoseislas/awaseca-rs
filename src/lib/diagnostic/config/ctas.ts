@@ -36,6 +36,29 @@ export const CTA_ROUTES: Record<CTARoute, CTARouteDefinition> = {
 };
 
 /**
+ * "Sin brechas relevantes" copy overrides, applied on top of `CTA_ROUTES`
+ * only when `hasGaps` is false (approved adjustments doc §4/§5/§7/§8,
+ * 2026-09-07). `CTA_ROUTES` above is always the "con brechas" copy —
+ * unchanged so it stays the literal default. `specialist` intentionally has
+ * no entry: it never varies by hasGaps.
+ */
+export const CTA_GAP_OVERRIDES: Partial<Record<CTARoute, Partial<CTARouteDefinition>>> = {
+  training: {
+    body: "Tu diagnóstico muestra una base sólida de preparación y algunas oportunidades para seguir consolidando el proceso. Podemos ayudarte a desarrollar las capacidades necesarias para que tu equipo avance con mayor autonomía y metodología.",
+  },
+  consulting: {
+    body: "Podemos acompañar a tu empresa para seguir consolidando su proceso de reporte, fortaleciendo su estructura, trazabilidad y alineación con sus objetivos.",
+  },
+  review: {
+    title: "Revisa y consolida la confiabilidad de la información de tu reporte",
+  },
+  "diagnostic-review": {
+    title: "Define el siguiente paso a partir de tus resultados",
+    body: "Tu diagnóstico permite identificar las principales oportunidades de consolidación y qué tipo de apoyo puede resultar más adecuado para tu organización.",
+  },
+};
+
+/**
  * Short Q2-obstacle emphasis phrases layered onto the CTA copy (spec §28).
  * `q2_other` intentionally has no entry — "no inventar un énfasis específico".
  */

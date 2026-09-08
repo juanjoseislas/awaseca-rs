@@ -1,4 +1,4 @@
-import { CTA_MODIFIERS, CTA_ROUTES, LEVEL_TONE, Q2_CTA_EMPHASIS } from "../config/ctas";
+import { CTA_GAP_OVERRIDES, CTA_MODIFIERS, CTA_ROUTES, LEVEL_TONE, Q2_CTA_EMPHASIS } from "../config/ctas";
 import type { CTARoute, CTAResult, DiagnosticInput, DimensionResults, Level } from "../types";
 import { mergeQ1Objectives } from "./merge-q1-objectives";
 
@@ -6,6 +6,7 @@ export type GenerateCTAContext = {
   answers: DiagnosticInput;
   dimensions: DimensionResults;
   finalLevel: Level;
+  hasGaps: boolean;
 };
 
 /**
@@ -46,12 +47,14 @@ function resolveModifier(dimensions: DimensionResults): string | null {
  * at most one obstacle emphasis, Q1's merged objectives add a brief
  * purpose phrase, D2/D3 add at most one modifier, and finalLevel only
  * adjusts tone — none of these ever change the route, IPRS, dimensions,
- * or level.
+ * or level. `hasGaps` only swaps in the "sin brechas" title/body variant
+ * for the current route (approved adjustments doc §3/§4/§5/§7/§8,
+ * 2026-09-07) — it never changes the route itself.
  */
 export function generateCTA(context: GenerateCTAContext): CTAResult {
-  const { answers, dimensions, finalLevel } = context;
+  const { answers, dimensions, finalLevel, hasGaps } = context;
   const route = resolveBaseRoute(answers);
-  const base = CTA_ROUTES[route];
+  const base = hasGaps ? CTA_ROUTES[route] : { ...CTA_ROUTES[route], ...CTA_GAP_OVERRIDES[route] };
 
   const emphasis = Q2_CTA_EMPHASIS[answers.q2.optionId];
   const objectives = mergeQ1Objectives(answers.q1);

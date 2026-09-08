@@ -52,3 +52,22 @@ export const LEVEL_INTERPRETATION: Record<Level, LevelInterpretation> = {
     objective: "Pasar del reporte a una gestión de sostenibilidad cada vez más integrada.",
   },
 };
+
+/**
+ * "¿Por qué este nivel?" explanation shown only when calculatedLevel !==
+ * finalLevel — one message per level-cap cause (approved adjustments doc,
+ * 2026-09-07). D2/D3-critical and the Avanzada->Preparada balance case are
+ * mutually exclusive by construction of `applyLevelCaps`: the D2/D3 cap
+ * (-> "En desarrollo") is applied before the balance cap (-> "Preparada")
+ * and caps only ever lower a level, so a result can never qualify for both.
+ */
+export const WHY_LEVEL_COPY = {
+  d2Critical:
+    "Aunque tu puntuación global corresponde a un nivel mayor, se identificó una brecha crítica en materialidad y grupos de interés. Por esta razón, el nivel final se limita hasta fortalecer esta dimensión.",
+  d3Critical:
+    "Aunque tu puntuación global corresponde a un nivel mayor, se identificó una brecha crítica en datos, indicadores y trazabilidad. Por esta razón, el nivel final se limita hasta fortalecer esta dimensión.",
+  bothCritical:
+    "Aunque tu puntuación global corresponde a un nivel mayor, se identificaron brechas críticas en materialidad y grupos de interés, así como en datos, indicadores y trazabilidad. Estas dimensiones limitan actualmente el nivel global de preparación.",
+  avanzadaToPreparada:
+    "Tu puntuación global alcanza el nivel Avanzada; sin embargo, una de las dimensiones presenta un nivel de desarrollo significativamente menor. Por esta razón, el resultado final se clasifica como Preparada hasta lograr una preparación más equilibrada.",
+} as const;

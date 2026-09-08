@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CTA_MODIFIERS, CTA_ROUTES } from "../config/ctas";
+import { CTA_GAP_OVERRIDES, CTA_MODIFIERS, CTA_ROUTES } from "../config/ctas";
 import { TIER4_OPTIONS, buildInput } from "../test-fixtures";
 import { calculateCriticalGaps } from "./calculate-critical-gaps";
 import { calculateDimensions } from "./calculate-dimensions";
@@ -7,6 +7,7 @@ import { calculateIPRS } from "./calculate-iprs";
 import { applyLevelCaps } from "./apply-level-caps";
 import { getCalculatedLevel } from "./calculate-level";
 import { generateCTA } from "./generate-cta";
+import { selectGaps } from "./select-gaps";
 
 function ctaFor(overrides: Record<string, string>, q3: string) {
   const input = buildInput(overrides, { q3 });
@@ -15,7 +16,27 @@ function ctaFor(overrides: Record<string, string>, q3: string) {
   const calculatedLevel = getCalculatedLevel(iprs);
   const { criticalGapDimensions } = calculateCriticalGaps(dimensions);
   const finalLevel = applyLevelCaps(calculatedLevel, iprs, dimensions, criticalGapDimensions);
-  return generateCTA({ answers: input, dimensions, finalLevel });
+  const hasGaps = selectGaps(dimensions).scenario === "gaps";
+  return generateCTA({ answers: input, dimensions, finalLevel, hasGaps });
+}
+
+/**
+ * Builds one fixed (answers, dimensions, finalLevel) context for a route and
+ * calls generateCTA with an explicit hasGaps override on each side, so the
+ * two calls differ ONLY in hasGaps — isolating the gap-variant copy from
+ * the tone/emphasis suffix, which vary with finalLevel/Q1/Q2, not hasGaps.
+ */
+function ctaVariants(overrides: Record<string, string>, q3: string) {
+  const input = buildInput(overrides, { q3 });
+  const dimensions = calculateDimensions(input);
+  const iprs = calculateIPRS(dimensions);
+  const calculatedLevel = getCalculatedLevel(iprs);
+  const { criticalGapDimensions } = calculateCriticalGaps(dimensions);
+  const finalLevel = applyLevelCaps(calculatedLevel, iprs, dimensions, criticalGapDimensions);
+  return {
+    withGaps: generateCTA({ answers: input, dimensions, finalLevel, hasGaps: true }),
+    withoutGaps: generateCTA({ answers: input, dimensions, finalLevel, hasGaps: false }),
+  };
 }
 
 describe("generateCTA", () => {
@@ -84,5 +105,56 @@ describe("generateCTA", () => {
     const withGap = ctaFor({ ...TIER4_OPTIONS, q7: "q7_no", q8: "q8_no" }, "q3_consulting");
     const withoutGap = ctaFor(TIER4_OPTIONS, "q3_consulting");
     expect(withGap.route).toBe(withoutGap.route);
+  });
+
+  describe("hasGaps copy variants (approved adjustments doc §3-8, 2026-09-07)", () => {
+    it("TEST 32 — hasGaps true uses the 'con brechas' variant (the CTA_ROUTES default)", () => {
+      const { withGaps } = ctaVariants({}, "q3_training");
+      expect(withGaps.body.startsWith(CTA_ROUTES.training.body)).toBe(true);
+    });
+
+    it("TEST 33 — hasGaps false never mentions gaps for training/consulting/diagnostic-review", () => {
+      for (const q3 of ["q3_training", "q3_consulting", "q3_unsure"]) {
+        const { withoutGaps } = ctaVariants({}, q3);
+        expect(withoutGaps.title.toLowerCase()).not.toContain("brecha");
+        expect(withoutGaps.body.toLowerCase()).not.toContain("brecha");
+      }
+    });
+
+    it("TEST 34 — training/consulting keep their title/button fixed across hasGaps", () => {
+      const { withGaps, withoutGaps } = ctaVariants({}, "q3_training");
+      expect(withGaps.title).toBe(CTA_ROUTES.training.title);
+      expect(withoutGaps.title).toBe(CTA_ROUTES.training.title);
+      expect(withGaps.buttonLabel).toBe(withoutGaps.buttonLabel);
+      expect(withGaps.body.startsWith(CTA_ROUTES.training.body)).toBe(true);
+      expect(withoutGaps.body.startsWith(CTA_GAP_OVERRIDES.training?.body ?? "\0")).toBe(true);
+    });
+
+    it("TEST 35 — review only swaps its title by hasGaps, body/button stay fixed", () => {
+      const { withGaps, withoutGaps } = ctaVariants({ q4: "q4_irregular" }, "q3_review");
+      expect(withGaps.title).toBe(CTA_ROUTES.review.title);
+      expect(withoutGaps.title).toBe(CTA_GAP_OVERRIDES.review?.title);
+      expect(withGaps.title).not.toBe(withoutGaps.title);
+      expect(withGaps.body).toBe(withoutGaps.body);
+      expect(withGaps.buttonLabel).toBe(withoutGaps.buttonLabel);
+    });
+
+    it("TEST 36 — diagnostic-review swaps both title and body by hasGaps", () => {
+      const { withGaps, withoutGaps } = ctaVariants({}, "q3_unsure");
+      expect(withGaps.title).toBe(CTA_ROUTES["diagnostic-review"].title);
+      expect(withoutGaps.title).toBe(CTA_GAP_OVERRIDES["diagnostic-review"]?.title);
+      expect(withGaps.body.startsWith(CTA_ROUTES["diagnostic-review"].body)).toBe(true);
+      expect(withoutGaps.body.startsWith(CTA_GAP_OVERRIDES["diagnostic-review"]?.body ?? "\0")).toBe(
+        true,
+      );
+      expect(withGaps.buttonLabel).toBe(withoutGaps.buttonLabel);
+    });
+
+    it("TEST 37 — specialist is identical regardless of hasGaps", () => {
+      const { withGaps, withoutGaps } = ctaVariants({}, "q3_specialist");
+      expect(withGaps).toEqual(withoutGaps);
+      expect(withGaps.title).toBe(CTA_ROUTES.specialist.title);
+      expect(withGaps.body.startsWith(CTA_ROUTES.specialist.body)).toBe(true);
+    });
   });
 });

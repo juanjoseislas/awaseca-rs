@@ -78,6 +78,7 @@ export const RESULTS_COPY = {
     maxLevelReached: "Has alcanzado el nivel más alto de preparación",
   },
   whatItMeans: { eyebrow: "¿Qué significa?" },
+  whyThisLevel: { title: "¿Por qué este nivel?" },
   dimensionMap: {
     eyebrow: "Mapa de preparación",
     title: "Tu desempeño por dimensión",

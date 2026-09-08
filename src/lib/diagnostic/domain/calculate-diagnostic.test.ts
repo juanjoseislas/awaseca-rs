@@ -50,6 +50,7 @@ describe("calculateDiagnostic", () => {
         "displayIprs",
         "calculatedLevel",
         "finalLevel",
+        "whyThisLevel",
         "criticalGap",
         "criticalGapDimensions",
         "uncertainAnswers",

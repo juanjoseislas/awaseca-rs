@@ -8,6 +8,7 @@ import { getCalculatedLevel } from "./calculate-level";
 import { calculateUncertainty } from "./calculate-uncertainty";
 import { generateCTA } from "./generate-cta";
 import { generateRecommendations } from "./generate-recommendations";
+import { resolveWhyThisLevel } from "./resolve-why-level";
 import { selectGaps } from "./select-gaps";
 import { selectStrengths } from "./select-strengths";
 import { validateDiagnosticInput } from "./validate-input";
@@ -28,11 +29,13 @@ export function calculateDiagnostic(input: DiagnosticInput): DiagnosticResult {
   const calculatedLevel = getCalculatedLevel(iprs);
   const { criticalGap, criticalGapDimensions } = calculateCriticalGaps(dimensions);
   const finalLevel = applyLevelCaps(calculatedLevel, iprs, dimensions, criticalGapDimensions);
+  const whyThisLevel = resolveWhyThisLevel(calculatedLevel, finalLevel, criticalGapDimensions);
   const uncertainty = calculateUncertainty(input);
   const strengths = selectStrengths(dimensions);
   const { gaps, scenario: gapsScenario } = selectGaps(dimensions);
+  const hasGaps = gapsScenario === "gaps";
   const recommendations = generateRecommendations({ answers: input, dimensions });
-  const cta = generateCTA({ answers: input, dimensions, finalLevel });
+  const cta = generateCTA({ answers: input, dimensions, finalLevel, hasGaps });
 
   return {
     methodologyVersion: DIAGNOSTIC_VERSION,
@@ -40,6 +43,7 @@ export function calculateDiagnostic(input: DiagnosticInput): DiagnosticResult {
     displayIprs: Math.floor(iprs),
     calculatedLevel,
     finalLevel,
+    whyThisLevel,
     criticalGap,
     criticalGapDimensions,
     uncertainAnswers: uncertainty.uncertainAnswers,

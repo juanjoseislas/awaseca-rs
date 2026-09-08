@@ -126,6 +126,7 @@ export type DiagnosticResult = {
   displayIprs: number;
   calculatedLevel: Level;
   finalLevel: Level;
+  whyThisLevel: string | null;
   criticalGap: boolean;
   criticalGapDimensions: DimensionId[];
   uncertainAnswers: number;

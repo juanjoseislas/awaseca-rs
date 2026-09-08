@@ -101,6 +101,12 @@ export function ResultsScreen({ result, answers, lead }: ResultsScreenProps) {
           <div class="mt-7 w-full max-w-[680px] border-l-[3px] border-verde pl-6 text-left">
             <p class="whitespace-pre-line text-lg leading-relaxed text-bluenavy">{levelCopy.text}</p>
           </div>
+          {result.whyThisLevel ? (
+            <div class="mt-7 w-full max-w-[680px] text-left">
+              <h3 class="font-heading text-xl font-bold text-acento1">{RESULTS_COPY.whyThisLevel.title}</h3>
+              <p class="mt-2 text-[15px] leading-relaxed text-text-muted">{result.whyThisLevel}</p>
+            </div>
+          ) : null}
         </div>
       </section>
 
