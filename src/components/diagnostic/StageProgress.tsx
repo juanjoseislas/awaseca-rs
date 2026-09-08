@@ -8,7 +8,6 @@ type StageProgressProps = {
   activeStage: Stage;
   /** 0-100 fill for the currently active stage's segment. Completed stages render at 100. */
   activeStageProgress: number;
-  /** Hidden entirely for Q16/Q17 screens per the closed spec's numbering rule. */
   caption?: string | null;
 };
 
@@ -16,14 +15,17 @@ export function StageProgress({ activeStage, activeStageProgress, caption }: Sta
   const activeIndex = STAGES.indexOf(activeStage);
 
   return (
-    <div class="mx-auto w-full max-w-[400px]">
+    <div class="mx-auto w-full">
       <div class="flex items-center justify-between">
         {STAGES.map((stage, index) => {
           const status = index < activeIndex ? "completed" : index === activeIndex ? "active" : "upcoming";
           const colorClass =
             status === "completed" ? "text-verde" : status === "active" ? "text-acento1" : "text-silver";
           return (
-            <span key={stage} class={`text-[11px] font-semibold uppercase tracking-wide ${colorClass}`}>
+            <span
+              key={stage}
+              class={`text-[11px] font-semibold uppercase tracking-wide min-[600px]:text-[13px] ${colorClass}`}
+            >
               {STAGE_LABELS[stage]}
             </span>
           );
@@ -42,7 +44,7 @@ export function StageProgress({ activeStage, activeStageProgress, caption }: Sta
           );
         })}
       </div>
-      {caption ? <p class="mt-2 text-center text-xs text-text-muted">{caption}</p> : null}
+      {caption ? <p class="mt-2 text-center text-[14px] text-text-muted">{caption}</p> : null}
     </div>
   );
 }

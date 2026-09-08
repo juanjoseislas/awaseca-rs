@@ -9,18 +9,16 @@ import {
   type PersistedProgress,
 } from "../../lib/diagnostic-progress-storage";
 import { ContactGateForm } from "./ContactGateForm";
-import { InterstitialScreen } from "./InterstitialScreen";
 import { QuestionScreen } from "./QuestionScreen";
 import { ResultsScreen } from "./ResultsScreen";
 import { ResumePrompt } from "./ResumePrompt";
 import { Topbar } from "./Topbar";
-import { COMPLETED_COPY, NAV_COPY } from "./copy";
 import { MAIN_QUESTION_IDS, wizardReducer } from "./state";
 import { INITIAL_WIZARD_STATE } from "./types";
 import { validateLeadForm } from "./validation";
 import type { Stage } from "./StageProgress";
 
-const RESUMABLE_SCREENS = new Set(["question", "completed", "q16", "q17"]);
+const RESUMABLE_SCREENS = new Set(["question"]);
 const PERFIL_COUNT = 3;
 const DIAGNOSTICO_COUNT = MAIN_QUESTION_IDS.length - PERFIL_COUNT;
 
@@ -117,49 +115,6 @@ export function DiagnosticApp() {
           onToggleMulti={(answer) =>
             dispatch({ type: "TOGGLE_MULTI_ANSWER", option: answer, maxSelections: question.maxSelections })
           }
-          onTextChange={() => {}}
-          onNext={() => dispatch({ type: "NEXT" })}
-          onBack={() => dispatch({ type: "BACK" })}
-        />
-      </div>
-    );
-  }
-
-  if (state.screen === "completed") {
-    return (
-      <div class="w-full">
-        <Topbar />
-        <InterstitialScreen
-          eyebrow={COMPLETED_COPY.eyebrow}
-          title={COMPLETED_COPY.title}
-          body={COMPLETED_COPY.body}
-          continueLabel={COMPLETED_COPY.continueLabel}
-          onContinue={() => dispatch({ type: "NEXT" })}
-          onBack={() => dispatch({ type: "BACK" })}
-          backLabel={NAV_COPY.back}
-        />
-      </div>
-    );
-  }
-
-  if (state.screen === "q16" || state.screen === "q17") {
-    const questionId = state.screen;
-    const question = QUESTIONS_BY_ID[questionId];
-    const value = questionId === "q16" ? state.answers.q16 : state.answers.q17;
-
-    return (
-      <div class="w-full">
-        <Topbar />
-        <QuestionScreen
-          question={question}
-          value={value}
-          fieldError={state.fieldError}
-          isFirst={false}
-          stage="diagnostico"
-          stageProgress={100}
-          caption={null}
-          onSelectSingle={(answer) => dispatch({ type: "SET_SINGLE_ANSWER", questionId, answer })}
-          onToggleMulti={() => {}}
           onTextChange={(text) => dispatch({ type: "SET_TEXT", text })}
           onNext={() => dispatch({ type: "NEXT" })}
           onBack={() => dispatch({ type: "BACK" })}

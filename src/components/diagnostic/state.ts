@@ -23,6 +23,8 @@ export const MAIN_QUESTION_IDS = [
   "q13",
   "q14",
   "q15",
+  "q16",
+  "q17",
 ] as const;
 
 export type WizardAction =
@@ -80,17 +82,8 @@ function handleNext(state: WizardState): WizardState {
         };
       }
 
-      return { ...state, screen: "completed", fieldError: null, direction: "forward" };
-    }
-
-    case "completed":
-      return { ...state, screen: "q16", direction: "forward" };
-
-    case "q16":
-      return { ...state, screen: "q17", direction: "forward" };
-
-    case "q17":
       return computeResult(state);
+    }
 
     default:
       return state;
@@ -105,14 +98,8 @@ function handleBack(state: WizardState): WizardState {
       }
       return state; // no earlier screen — Back is hidden on the first question anyway
     }
-    case "completed":
-      return { ...state, screen: "question", questionIndex: MAIN_QUESTION_IDS.length - 1, direction: "backward" };
-    case "q16":
-      return { ...state, screen: "completed", direction: "backward" };
-    case "q17":
-      return { ...state, screen: "q16", direction: "backward" };
     case "lead-capture":
-      return { ...state, screen: "q17", direction: "backward" };
+      return { ...state, screen: "question", questionIndex: MAIN_QUESTION_IDS.length - 1, direction: "backward" };
     default:
       return state;
   }

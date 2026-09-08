@@ -38,36 +38,24 @@ describe("wizardReducer", () => {
     expect(next.fieldError).toBeNull();
   });
 
-  it("NEXT on the last main question (Q15) moves to 'completed'", () => {
-    const state = stateAt("question", {
-      questionIndex: MAIN_QUESTION_IDS.length - 1,
-      answers: { q1: [], q15: answerFor("q15", "q15_regular") },
-    });
+  it("NEXT on an optional unanswered question (Q16) advances without blocking", () => {
+    const q16Index = MAIN_QUESTION_IDS.indexOf("q16");
+    const state = stateAt("question", { questionIndex: q16Index, answers: { q1: [] } });
     const next = wizardReducer(state, { type: "NEXT" });
-    expect(next.screen).toBe("completed");
+    expect(next.screen).toBe("question");
+    expect(next.questionIndex).toBe(q16Index + 1);
+    expect(next.fieldError).toBeNull();
   });
 
-  it("the completed -> q16 -> q17 chain advances without validation blocking", () => {
-    let state = stateAt("completed");
-    state = wizardReducer(state, { type: "NEXT" });
-    expect(state.screen).toBe("q16");
-    state = wizardReducer(state, { type: "NEXT" });
-    expect(state.screen).toBe("q17");
-  });
-
-  it("Q16/Q17 never increment questionIndex or touch the Q1-15 progress counter", () => {
-    const state = stateAt("q16", { questionIndex: MAIN_QUESTION_IDS.length - 1 });
-    const next = wizardReducer(state, { type: "NEXT" });
-    expect(next.questionIndex).toBe(MAIN_QUESTION_IDS.length - 1);
-  });
-
-  it("NEXT from q17 computes the result and moves to lead-capture, without revealing it", () => {
+  it("NEXT from the last question (Q17) computes the result and moves to lead-capture, without revealing it", () => {
     const answers: WizardState["answers"] = { q1: [answerFor("q1", "q1_regulatory")] };
     for (const id of MAIN_QUESTION_IDS.slice(1)) {
-      const firstOption = QUESTIONS_BY_ID[id].options![0];
+      const question = QUESTIONS_BY_ID[id];
+      if (question.type === "textarea") continue;
+      const firstOption = question.options![0];
       (answers as Record<string, Answer>)[id] = answerFor(id, firstOption.id);
     }
-    const state = stateAt("q17", { answers });
+    const state = stateAt("question", { questionIndex: MAIN_QUESTION_IDS.length - 1, answers });
     const next = wizardReducer(state, { type: "NEXT" });
 
     expect(next.screen).toBe("lead-capture");
@@ -75,8 +63,11 @@ describe("wizardReducer", () => {
     expect(next.result?.iprs).toBeGreaterThanOrEqual(0);
   });
 
-  it("NEXT from q17 with incomplete answers routes to the error screen instead of throwing", () => {
-    const state = stateAt("q17", { answers: { q1: [] } });
+  it("NEXT from the last question with incomplete answers routes to the error screen instead of throwing", () => {
+    const state = stateAt("question", {
+      questionIndex: MAIN_QUESTION_IDS.length - 1,
+      answers: { q1: [] },
+    });
     const next = wizardReducer(state, { type: "NEXT" });
     expect(next.screen).toBe("error");
   });
@@ -124,10 +115,11 @@ describe("wizardReducer", () => {
     expect(next.questionIndex).toBe(0);
   });
 
-  it("BACK from q16 returns to the completed interstitial", () => {
-    const state = stateAt("q16");
+  it("BACK from lead-capture returns to the last question (Q17)", () => {
+    const state = stateAt("lead-capture");
     const next = wizardReducer(state, { type: "BACK" });
-    expect(next.screen).toBe("completed");
+    expect(next.screen).toBe("question");
+    expect(next.questionIndex).toBe(MAIN_QUESTION_IDS.length - 1);
   });
 
   it("BACK preserves previously entered answers", () => {
@@ -148,7 +140,7 @@ describe("wizardReducer", () => {
   });
 
   it("RESET returns to the initial state — first question, no answers", () => {
-    const state = stateAt("q17", { questionIndex: 10 });
+    const state = stateAt("question", { questionIndex: 10 });
     const next = wizardReducer(state, { type: "RESET" });
     expect(next.screen).toBe("question");
     expect(next.questionIndex).toBe(0);

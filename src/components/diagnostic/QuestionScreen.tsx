@@ -43,7 +43,8 @@ export function QuestionScreen({
       ? !(value as Answer[] | undefined)?.length
       : !value;
   const isSkippable = !question.required && isEmpty;
-  const nextLabel = isSkippable ? NAV_COPY.skip : NAV_COPY.next;
+  const nextLabel = isOpenText ? NAV_COPY.next : isSkippable ? NAV_COPY.skip : NAV_COPY.next;
+  const showSkipLink = isOpenText && !question.required;
 
   return (
     <div class="mx-auto flex max-w-[620px] flex-col gap-6 px-4 py-12">
@@ -74,21 +75,30 @@ export function QuestionScreen({
 
       {fieldError ? <p class="text-sm font-medium text-[#c0392b]">{fieldError}</p> : null}
 
-      <div class="mt-4 flex items-center justify-between">
-        {!isFirst ? (
-          <button type="button" onClick={onBack} class="text-sm font-medium text-silver hover:text-acento1">
-            {NAV_COPY.back}
+      <div class="mt-4 flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          {!isFirst ? (
+            <button type="button" onClick={onBack} class="text-sm font-medium text-silver hover:text-acento1">
+              {NAV_COPY.back}
+            </button>
+          ) : (
+            <span />
+          )}
+          <button
+            type="button"
+            onClick={onNext}
+            class="rounded-button bg-acento1 px-8 py-3 text-sm font-bold text-white transition-colors hover:bg-[#345266]"
+          >
+            {nextLabel}
           </button>
-        ) : (
-          <span />
-        )}
-        <button
-          type="button"
-          onClick={onNext}
-          class="rounded-button bg-acento1 px-8 py-3 text-sm font-bold text-white transition-colors hover:bg-[#345266]"
-        >
-          {nextLabel}
-        </button>
+        </div>
+        {showSkipLink ? (
+          <div class="flex justify-end">
+            <button type="button" onClick={onNext} class="text-sm font-medium text-silver hover:text-acento1">
+              {NAV_COPY.skip}
+            </button>
+          </div>
+        ) : null}
       </div>
     </div>
   );

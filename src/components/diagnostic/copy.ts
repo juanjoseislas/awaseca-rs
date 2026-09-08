@@ -26,13 +26,6 @@ export const RESUME_PROMPT_COPY = {
   body: "¿Quieres continuar donde lo dejaste o empezar de nuevo?",
 };
 
-export const COMPLETED_COPY = {
-  eyebrow: "100% completado",
-  title: "Diagnóstico completado",
-  body: "Ya respondiste todas las preguntas principales. Antes de mostrarte tu resultado, dos preguntas opcionales nos ayudarán a entender mejor tu contexto.",
-  continueLabel: "Continuar",
-};
-
 export const LEAD_GATE_COPY = {
   eyebrow: "Último paso",
   title: "Tu diagnóstico está listo",

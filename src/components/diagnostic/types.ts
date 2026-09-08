@@ -1,14 +1,7 @@
 import type { DiagnosticInput, DiagnosticResult } from "../../lib/diagnostic";
 import type { LeadFormValues } from "../../lib/diagnostic-submission";
 
-export type WizardScreen =
-  | "question"
-  | "completed"
-  | "q16"
-  | "q17"
-  | "lead-capture"
-  | "results"
-  | "error";
+export type WizardScreen = "question" | "lead-capture" | "results" | "error";
 
 export type SubmissionStatus = "idle" | "submitting" | "submitted" | "error";
 
