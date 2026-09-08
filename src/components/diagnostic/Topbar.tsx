@@ -6,7 +6,7 @@ export function Topbar() {
     <header class="w-full bg-white border-b border-[#e6e6e6]">
       <div class="mx-auto flex max-w-[1200px] items-end justify-center gap-4 px-8 py-4 min-[700px]:gap-6">
         <img src={awasecaLogoUrl} alt="Awaseca" class="h-8 w-auto min-[700px]:h-[74px]" />
-        <img src={personazLogoUrl} alt="personaZ" class="h-5 w-auto min-[700px]:h-9" />
+        <img src={personazLogoUrl} alt="personaZ" class="h-4 w-auto min-[700px]:h-[29px]" />
       </div>
     </header>
   );
