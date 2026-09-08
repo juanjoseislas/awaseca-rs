@@ -110,13 +110,15 @@ export function ResultsScreen({ result }: ResultsScreenProps) {
 
       <section class="w-full bg-grey px-8 py-14">
         <div class="mx-auto flex max-w-[840px] flex-col items-center">
-          <span class="text-[11px] font-bold uppercase tracking-wide text-text-eyebrow min-[700px]:text-[13px]">
-            {RESULTS_COPY.dimensionMap.eyebrow}
-          </span>
-          <h2 class="mt-2.5 font-heading text-[34px] font-bold text-acento1 min-[700px]:text-[46px]">{RESULTS_COPY.dimensionMap.title}</h2>
-          <p class="mt-2 max-w-[520px] text-center text-[15px] text-text-muted">
-            {RESULTS_COPY.dimensionMap.subtitle}
-          </p>
+          <div class="flex flex-col items-center text-center">
+            <span class="text-[11px] font-bold uppercase tracking-wide text-text-eyebrow min-[700px]:text-[13px]">
+              {RESULTS_COPY.dimensionMap.eyebrow}
+            </span>
+            <h2 class="mt-2.5 font-heading text-[34px] font-bold text-acento1 min-[700px]:text-[46px]">{RESULTS_COPY.dimensionMap.title}</h2>
+            <p class="mt-2 max-w-[520px] text-[15px] text-text-muted">
+              {RESULTS_COPY.dimensionMap.subtitle}
+            </p>
+          </div>
           <div class="mt-9 flex w-full flex-wrap justify-end gap-5">
             <span class="flex items-center gap-1.5 text-[11px] text-text-muted">
               <span class="size-2.5 rounded-sm bg-verde" /> {RESULTS_COPY.dimensionMap.legend.strength}
@@ -138,26 +140,28 @@ export function ResultsScreen({ result }: ResultsScreenProps) {
 
       <section class="w-full bg-white px-8 py-14">
         <div class="mx-auto flex max-w-[1100px] flex-col items-center">
-          {result.strengths.length > 0 ? (
-            <>
-              <span class="text-[11px] font-bold uppercase tracking-wide text-text-eyebrow min-[700px]:text-[13px]">
-                {RESULTS_COPY.strengths.eyebrow}
-              </span>
-              <h2 class="mt-2.5 font-heading text-[34px] font-bold text-acento1 min-[700px]:text-[46px]">{RESULTS_COPY.strengths.title}</h2>
-            </>
-          ) : (
-            <>
-              <span class="text-[11px] font-bold uppercase tracking-wide text-text-eyebrow min-[700px]:text-[13px]">
-                {RESULTS_COPY.strengths.noStrengths.eyebrow}
-              </span>
-              <h2 class="mt-2.5 font-heading text-[34px] font-bold text-acento1 min-[700px]:text-[46px]">
-                {RESULTS_COPY.strengths.noStrengths.title}
-              </h2>
-              <p class="mt-3 max-w-[680px] text-center text-[15px] text-text-muted">
-                {RESULTS_COPY.strengths.noStrengths.subtitle}
-              </p>
-            </>
-          )}
+          <div class="flex flex-col items-center text-center">
+            {result.strengths.length > 0 ? (
+              <>
+                <span class="text-[11px] font-bold uppercase tracking-wide text-text-eyebrow min-[700px]:text-[13px]">
+                  {RESULTS_COPY.strengths.eyebrow}
+                </span>
+                <h2 class="mt-2.5 font-heading text-[34px] font-bold text-acento1 min-[700px]:text-[46px]">{RESULTS_COPY.strengths.title}</h2>
+              </>
+            ) : (
+              <>
+                <span class="text-[11px] font-bold uppercase tracking-wide text-text-eyebrow min-[700px]:text-[13px]">
+                  {RESULTS_COPY.strengths.noStrengths.eyebrow}
+                </span>
+                <h2 class="mt-2.5 font-heading text-[34px] font-bold text-acento1 min-[700px]:text-[46px]">
+                  {RESULTS_COPY.strengths.noStrengths.title}
+                </h2>
+                <p class="mt-3 max-w-[680px] text-[15px] text-text-muted">
+                  {RESULTS_COPY.strengths.noStrengths.subtitle}
+                </p>
+              </>
+            )}
+          </div>
           <div class={strengthCardCount === 1 ? singleCardGridClass : twoUpGridClass}>
             {result.strengths.length > 0
               ? result.strengths.map((dimension) => (
@@ -177,12 +181,14 @@ export function ResultsScreen({ result }: ResultsScreenProps) {
 
       <section class="w-full bg-grey px-8 py-14">
         <div class="mx-auto flex max-w-[1100px] flex-col items-center">
-          <span class="text-[11px] font-bold uppercase tracking-wide text-text-eyebrow min-[700px]:text-[13px]">
-            {result.gapsScenario === "gaps" ? RESULTS_COPY.gaps.eyebrow : RESULTS_COPY.gaps.consolidationEyebrow}
-          </span>
-          <h2 class="mt-2.5 font-heading text-[34px] font-bold text-acento1 min-[700px]:text-[46px]">
-            {result.gapsScenario === "gaps" ? RESULTS_COPY.gaps.title : RESULTS_COPY.gaps.consolidationTitle}
-          </h2>
+          <div class="text-center">
+            <span class="text-[11px] font-bold uppercase tracking-wide text-text-eyebrow min-[700px]:text-[13px]">
+              {result.gapsScenario === "gaps" ? RESULTS_COPY.gaps.eyebrow : RESULTS_COPY.gaps.consolidationEyebrow}
+            </span>
+            <h2 class="mt-2.5 font-heading text-[34px] font-bold text-acento1 min-[700px]:text-[46px]">
+              {result.gapsScenario === "gaps" ? RESULTS_COPY.gaps.title : RESULTS_COPY.gaps.consolidationTitle}
+            </h2>
+          </div>
           <div class={result.gaps.length === 1 ? singleCardGridClass : twoUpGridClass}>
             {result.gaps.map((dimension) => (
               <InsightCard
@@ -198,10 +204,12 @@ export function ResultsScreen({ result }: ResultsScreenProps) {
 
       <section class="w-full bg-acento1 px-8 py-14">
         <div class="mx-auto flex max-w-[800px] flex-col items-center">
-          <span class="text-[11px] font-bold uppercase tracking-wide text-[rgba(255,255,255,0.85)] min-[700px]:text-[13px]">
-            {RESULTS_COPY.recommendations.eyebrow}
-          </span>
-          <h2 class="mt-2.5 font-heading text-[42px] font-bold text-white min-[700px]:text-[46px]">{RESULTS_COPY.recommendations.title}</h2>
+          <div class="text-center">
+            <span class="text-[11px] font-bold uppercase tracking-wide text-[rgba(255,255,255,0.85)] min-[700px]:text-[13px]">
+              {RESULTS_COPY.recommendations.eyebrow}
+            </span>
+            <h2 class="mt-2.5 font-heading text-[42px] font-bold text-white min-[700px]:text-[46px]">{RESULTS_COPY.recommendations.title}</h2>
+          </div>
           <div class="mt-10 flex w-full flex-col gap-3.5">
             {result.recommendations.map((recommendation, index) => (
               <RecommendationCard key={recommendation.id} recommendation={recommendation} index={index} />

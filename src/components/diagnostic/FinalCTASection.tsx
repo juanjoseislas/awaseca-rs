@@ -60,12 +60,14 @@ export function FinalCTASection({ cta, finalLevel, displayIprs, onCtaClick }: Fi
             {cta.buttonLabel}
             <img src={ctaArrowUrl} alt="" class="size-[18px]" />
           </a>
-          <p class="text-xs text-[rgba(255,255,255,0.42)]">{RESULTS_COPY.finalCta.disclaimerNote}</p>
+          <p class="rounded-full bg-bluenavy/60 px-3 py-1 text-xs text-[rgba(255,255,255,0.85)]">
+            {RESULTS_COPY.finalCta.disclaimerNote}
+          </p>
         </div>
         <button
           type="button"
           onClick={handleShare}
-          class="mt-2 text-[13px] text-[rgba(255,255,255,0.38)] underline-offset-2 hover:underline"
+          class="mt-2 rounded-full bg-bluenavy/60 px-3 py-1 text-[13px] text-[rgba(255,255,255,0.85)] underline-offset-2 hover:underline"
         >
           {copied ? SHARE_COPY.copiedLabel : RESULTS_COPY.finalCta.shareLink}
         </button>
