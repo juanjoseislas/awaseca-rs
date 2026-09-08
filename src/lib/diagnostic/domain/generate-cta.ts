@@ -66,7 +66,6 @@ export function generateCTA(context: GenerateCTAContext): CTAResult {
 
   const bodyLines = [introParts.join(" ")];
   if (objectives.length > 0) bodyLines.push(`Enfocado en: ${objectives.join(", ")}.`);
-  bodyLines.push(`Próximo paso sugerido: ${tone}.`);
 
   return {
     route,
@@ -75,6 +74,9 @@ export function generateCTA(context: GenerateCTAContext): CTAResult {
     // whitespace-pre-line (or equivalent) rather than collapsing it into
     // one paragraph.
     body: bodyLines.join("\n"),
+    // Kept out of `body` so the UI can render it with its own emphasis
+    // (bold, larger type) instead of as plain paragraph text.
+    nextStep: `Próximo paso sugerido: ${tone}.`,
     modifier,
     buttonLabel: base.buttonLabel,
   };

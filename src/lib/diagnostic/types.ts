@@ -116,6 +116,8 @@ export type CTAResult = {
   route: CTARoute;
   title: string;
   body: string;
+  /** "Próximo paso sugerido: ..." — kept separate so the UI can style it distinctly. */
+  nextStep: string;
   modifier: string | null;
   buttonLabel: string;
 };

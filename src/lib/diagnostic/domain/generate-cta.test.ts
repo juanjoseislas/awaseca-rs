@@ -157,4 +157,10 @@ describe("generateCTA", () => {
       expect(withGaps.body.startsWith(CTA_ROUTES.specialist.body)).toBe(true);
     });
   });
+
+  it("keeps 'Próximo paso sugerido' out of body, in its own nextStep field", () => {
+    const cta = ctaFor({}, "q3_training");
+    expect(cta.body).not.toContain("Próximo paso sugerido");
+    expect(cta.nextStep).toContain("Próximo paso sugerido:");
+  });
 });
