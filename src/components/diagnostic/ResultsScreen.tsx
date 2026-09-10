@@ -29,6 +29,20 @@ export function ResultsScreen({ result }: ResultsScreenProps) {
   const heroRef = useRef<HTMLDivElement>(null);
   const [showSticky, setShowSticky] = useState(false);
 
+  // The lead-capture form can be scrolled down (especially on mobile) when
+  // the user taps "Ver mi diagnóstico" — this is a same-page state swap,
+  // not a navigation, so the browser keeps that scroll position and the
+  // results page would otherwise mount partway down instead of at the
+  // hero. Instant, not smooth: this fires at the same moment as the
+  // hero's own enter-el reveal animation, and a smooth scroll racing that
+  // animation is exactly what made the questionnaire's transition feel
+  // harsh (see QuestionScreen.tsx) — here it's a one-time transition
+  // after an async submit, so an instant jump reads as part of the
+  // "results are ready" moment rather than a jarring repeat.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   useEffect(() => {
     const heroEl = heroRef.current;
     if (!heroEl) return;

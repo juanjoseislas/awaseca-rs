@@ -23,10 +23,10 @@ export function StickyMiniHeader({ displayIprs, finalLevel, cta, visible, onCtaC
     >
       <div class="mx-auto flex max-w-[1200px] items-center justify-between gap-3 px-8 py-3">
         <div class="flex flex-col gap-1 min-[700px]:flex-row min-[700px]:items-center min-[700px]:gap-3.5">
-          <span class="text-[13px] font-medium text-[rgba(255,255,255,0.8)]">Tu diagnóstico</span>
-          <div class="flex items-center gap-2">
-            <span class="text-[20px] font-bold text-verde">{displayIprs} / 100</span>
-            <span class="rounded-full bg-verde px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-bluenavy">
+          <span class="whitespace-nowrap text-[13px] font-medium text-[rgba(255,255,255,0.8)]">Tu diagnóstico</span>
+          <div class="flex flex-col items-start gap-1 min-[700px]:flex-row min-[700px]:items-center min-[700px]:gap-2">
+            <span class="whitespace-nowrap text-[20px] font-bold text-verde">{displayIprs} / 100</span>
+            <span class="w-fit rounded-full bg-verde px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-bluenavy">
               {finalLevel}
             </span>
           </div>
