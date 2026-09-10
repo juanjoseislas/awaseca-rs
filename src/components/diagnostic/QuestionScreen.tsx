@@ -1,10 +1,46 @@
-import { useEffect } from "preact/hooks";
 import type { Answer, Question } from "../../lib/diagnostic";
 import { DIMENSIONS } from "../../lib/diagnostic";
 import { CardChoiceField } from "./CardChoiceField";
 import { OpenTextField } from "./OpenTextField";
 import { NAV_COPY, STAGE_LABELS, VALIDATION_COPY } from "./copy";
 import { StageProgress, type Stage } from "./StageProgress";
+
+/**
+ * Fixes a mobile UX bug: advancing to the next question used to keep the
+ * browser's current scroll position, so the new question rendered
+ * off-screen below the Siguiente button the user just tapped.
+ *
+ * Sequenced, not simultaneous: scroll the *current* content back to the
+ * top first, and only mount the next question once that settles — doing
+ * both at once (an instant jump plus a fresh entrance animation, or a
+ * smooth scroll racing that same animation) is what read as harsh. Skipped
+ * entirely when there's nothing meaningful to scroll (most short
+ * questions never move the button far from the top), so this never adds
+ * latency to the common case across a 17-question flow.
+ */
+function scrollToTopThenRun(action: () => void) {
+  if (window.scrollY < 40) {
+    action();
+    return;
+  }
+
+  let done = false;
+  let fallbackId: ReturnType<typeof setTimeout>;
+  const finish = () => {
+    if (done) return;
+    done = true;
+    window.removeEventListener("scrollend", finish);
+    clearTimeout(fallbackId);
+    action();
+  };
+
+  // `scrollend` covers the common case precisely; the timeout is a safety
+  // net for browsers that don't support it (or any edge case where it
+  // never fires) so a tap can never feel stuck.
+  fallbackId = setTimeout(finish, 350);
+  window.addEventListener("scrollend", finish, { once: true });
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
 
 type QuestionScreenProps = {
   question: Question;
@@ -37,21 +73,6 @@ export function QuestionScreen({
 }: QuestionScreenProps) {
   const isOpenText = question.type === "textarea";
   const eyebrow = question.dimension ? DIMENSIONS[question.dimension].name : STAGE_LABELS[stage];
-
-  // Fixes a mobile UX bug: without this, advancing to the next question
-  // (this component remounts fresh each time, keyed by questionId) kept
-  // the browser's current scroll position, so the new question rendered
-  // off-screen below the Siguiente button the user just tapped, forcing a
-  // manual scroll-up to read it. Instant, not smooth: a smooth scroll runs
-  // for ~300-500ms at the same time .enter-el's entrance animation is
-  // already playing (both start at mount), so the content either animates
-  // in while still off-screen or gets visually swamped by the bigger
-  // scroll motion — either way the entrance reads as "not there". The
-  // scroll-position fix should be an invisible correction; the entrance
-  // animation should be the only motion the user actually perceives.
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   const isEmpty = isOpenText
     ? !(value as string | undefined)?.trim()
@@ -96,7 +117,7 @@ export function QuestionScreen({
           {!isFirst ? (
             <button
               type="button"
-              onClick={onBack}
+              onClick={() => scrollToTopThenRun(onBack)}
               class="link-underline text-sm font-medium text-silver transition-colors hover:text-acento1"
             >
               {NAV_COPY.back}
@@ -106,7 +127,7 @@ export function QuestionScreen({
           )}
           <button
             type="button"
-            onClick={onNext}
+            onClick={() => scrollToTopThenRun(onNext)}
             class="press-scale rounded-button bg-acento1 px-8 py-3 text-sm font-bold text-white transition-colors hover:bg-[#345266]"
           >
             {nextLabel}
@@ -116,7 +137,7 @@ export function QuestionScreen({
           <div class="flex justify-end">
             <button
               type="button"
-              onClick={onNext}
+              onClick={() => scrollToTopThenRun(onNext)}
               class="link-underline text-sm font-medium text-silver transition-colors hover:text-acento1"
             >
               {NAV_COPY.skip}
