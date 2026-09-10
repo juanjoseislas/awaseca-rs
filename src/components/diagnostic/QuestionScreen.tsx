@@ -42,10 +42,15 @@ export function QuestionScreen({
   // (this component remounts fresh each time, keyed by questionId) kept
   // the browser's current scroll position, so the new question rendered
   // off-screen below the Siguiente button the user just tapped, forcing a
-  // manual scroll-up to read it.
+  // manual scroll-up to read it. Instant, not smooth: a smooth scroll runs
+  // for ~300-500ms at the same time .enter-el's entrance animation is
+  // already playing (both start at mount), so the content either animates
+  // in while still off-screen or gets visually swamped by the bigger
+  // scroll motion — either way the entrance reads as "not there". The
+  // scroll-position fix should be an invisible correction; the entrance
+  // animation should be the only motion the user actually perceives.
   useEffect(() => {
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
+    window.scrollTo(0, 0);
   }, []);
 
   const isEmpty = isOpenText
