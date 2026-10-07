@@ -3,7 +3,12 @@ import { env as cloudflareEnv } from "cloudflare:workers";
 import { createClient } from "@supabase/supabase-js";
 import type { DiagnosticInput } from "../../lib/diagnostic";
 import { calculateDiagnostic, DiagnosticValidationError } from "../../lib/diagnostic";
+import {
+  buildInterpretationMarkdown,
+  slugifyCompanyName,
+} from "../../lib/diagnostic/report/build-interpretation-markdown";
 import type { LeadFormValues } from "../../lib/diagnostic-submission";
+import { sendInterpretationEmail } from "../../lib/notify/send-interpretation-email";
 import { validateLeadForm } from "../../components/diagnostic/validation";
 
 export const prerender = false;
@@ -31,6 +36,9 @@ type CloudflareEnv = {
   SUPABASE_URL?: string;
   SUPABASE_SECRET_KEY?: string;
   SUBMIT_DIAGNOSTIC_LIMITER?: RateLimiter;
+  RESEND_API_KEY?: string;
+  RESEND_FROM_EMAIL?: string;
+  SALES_NOTIFICATION_EMAIL?: string;
 };
 
 function jsonResponse(status: number, body: unknown, extraHeaders?: Record<string, string>): Response {
@@ -100,7 +108,29 @@ export const POST: APIRoute = async ({ request }) => {
     auth: { persistSession: false },
   });
 
+  // Generated up front (rather than left to the DB's gen_random_uuid()
+  // default) so the interpretation markdown below can reference the same
+  // id/timestamp the row ends up with, in a single insert round-trip.
+  const id = crypto.randomUUID();
+  const createdAt = new Date().toISOString();
+
+  // The sales brief is a nice-to-have on top of the core submission, not
+  // a precondition for it — a bug in the (much less exercised) markdown
+  // builder must never cost the lead their saved answers. `null` is a
+  // valid value for the nullable `interpretation_markdown` column.
+  let interpretationMarkdown: string | null = null;
+  try {
+    interpretationMarkdown = buildInterpretationMarkdown({ id, createdAt, lead, answers, attribution, result });
+  } catch (error) {
+    console.error(
+      "[api/submit-diagnostic] failed to build interpretation markdown — saving the submission without it",
+      error,
+    );
+  }
+
   const { error } = await supabase.from("diagnostic_submissions").insert({
+    id,
+    created_at: createdAt,
     methodology_version: result.methodologyVersion,
 
     lead_first_name: lead.firstName,
@@ -127,6 +157,7 @@ export const POST: APIRoute = async ({ request }) => {
     gaps_scenario: result.gapsScenario,
     recommendations: result.recommendations,
     cta: result.cta,
+    interpretation_markdown: interpretationMarkdown,
 
     source: attribution?.source ?? null,
     landing_page: attribution?.landingPage ?? null,
@@ -141,6 +172,35 @@ export const POST: APIRoute = async ({ request }) => {
   if (error) {
     console.error("[api/submit-diagnostic] supabase insert failed", error);
     return jsonResponse(500, { ok: false, error: "storage_failed" });
+  }
+
+  // A notification failure must never turn into an error response to the
+  // lead — same contract documented on saveDiagnosticSubmission for
+  // persistence. (A local copy for manual lookup is available on demand
+  // via `npm run fetch-interpretation -- <id>`, documented in README.md —
+  // this route itself never touches the filesystem: Cloudflare Workers
+  // has none, in dev or in production.)
+  const attachmentFilename = `${id}-${slugifyCompanyName(lead.company)}.md`;
+
+  if (!interpretationMarkdown) {
+    console.error("[api/submit-diagnostic] skipping sales email — interpretation markdown generation failed earlier");
+  } else if (!env?.RESEND_API_KEY || !env?.SALES_NOTIFICATION_EMAIL) {
+    console.error(
+      "[api/submit-diagnostic] missing RESEND_API_KEY/SALES_NOTIFICATION_EMAIL env vars — skipping email",
+    );
+  } else {
+    const outcome = await sendInterpretationEmail({
+      apiKey: env.RESEND_API_KEY,
+      from: env.RESEND_FROM_EMAIL ?? "Awaseca <diagnosticos@awaseca.com>",
+      to: env.SALES_NOTIFICATION_EMAIL,
+      lead,
+      result,
+      markdown: interpretationMarkdown,
+      attachmentFilename,
+    });
+    if (!outcome.ok) {
+      console.error("[api/submit-diagnostic] failed to send interpretation email", outcome.error);
+    }
   }
 
   return jsonResponse(200, { ok: true });

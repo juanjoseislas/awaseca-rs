@@ -27,3 +27,6 @@ worker-configuration.d.ts
 
 # jetbrains setting folder
 .idea/
+
+# local-only lead/meeting briefs (contain PII — never commit)
+Interpretaciones/

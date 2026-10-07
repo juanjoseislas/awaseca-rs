@@ -12,7 +12,8 @@
     "astro": "astro",
     "test": "vitest run",
     "test:watch": "vitest",
-    "generate-types": "wrangler types"
+    "generate-types": "wrangler types",
+    "fetch-interpretation": "node scripts/fetch-interpretation.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.3.0",

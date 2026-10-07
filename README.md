@@ -74,6 +74,46 @@ into a `diagnostic_submissions` table.
      fill in the real values.
    - **Production**: Cloudflare Pages dashboard → Settings → Environment
      variables.
+6. If the table already existed before the sales-brief automation below
+   was added, run the `alter table ... add column if not exists
+   interpretation_markdown text;` migration at the bottom of
+   `supabase/schema.sql` once.
+
+## Sales-brief notifications
+
+Each submission also generates a markdown sales brief — same sections as a
+manually-written one (result, dimensions, recommendations, full Q&A, CTA,
+talking points) — via `src/lib/diagnostic/report/build-interpretation-markdown.ts`.
+It's saved in the `interpretation_markdown` column of the submission's row,
+and the route then emails it to the sales team through
+[Resend](https://resend.com) (`src/lib/notify/send-interpretation-email.ts`,
+plain `fetch` to its HTTP API — no SDK dependency).
+
+Configure in `.dev.vars` (local) / the Cloudflare Pages dashboard (prod):
+`RESEND_API_KEY`, `RESEND_FROM_EMAIL` (must be on a domain verified in your
+Resend account), `SALES_NOTIFICATION_EMAIL` (the sales-team recipient). If
+either `RESEND_API_KEY` or `SALES_NOTIFICATION_EMAIL` is missing, the
+submission still saves and responds normally — only the email is skipped
+(logged as an error server-side).
+
+The API route itself never touches the filesystem — Cloudflare Workers has
+none, in dev or in production (confirmed: even under `astro dev`, the
+`@astrojs/cloudflare` adapter runs requests through a workerd-like sandbox
+that throws `EPERM` on any real file write). If you need a local `.md` copy
+of a specific submission — e.g. to open it in-editor before a sales call
+without digging through email or Supabase — run, from the repo root with
+`.dev.vars` filled in:
+
+```bash
+npm run fetch-interpretation -- <submission-id>
+```
+
+This pulls that row's `interpretation_markdown` from Supabase via plain
+Node (`scripts/fetch-interpretation.mjs` — outside the Workers/Vite runtime,
+so it has real `fs` access) and saves it to the gitignored
+`Interpretaciones/<id>-<company-slug>.md`. It's a manual, on-demand dev
+convenience, not something the sales team runs — they already get the
+brief automatically by email on every submission.
 
 ## Design tokens
 

@@ -105,6 +105,23 @@ export type Recommendation = Pick<
   "id" | "category" | "title" | "description"
 >;
 
+/**
+ * Context available to the sales-insights catalog (see
+ * config/sales-insights.ts) — the full answers plus the already-computed
+ * result, so a rule can condition on either raw answers or derived fields
+ * (e.g. criticalGap) without recomputing anything itself.
+ */
+export type SalesInsightContext = {
+  answers: DiagnosticInput;
+  result: DiagnosticResult;
+};
+
+export type SalesInsightRule = {
+  id: string;
+  condition: (context: SalesInsightContext) => boolean;
+  text: (context: SalesInsightContext) => string;
+};
+
 export type CTARoute =
   | "training"
   | "consulting"

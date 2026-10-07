@@ -5,6 +5,17 @@
 	"name": "awaseca-rs",
 	"main": "@astrojs/cloudflare/entrypoints/server",
 	"keep_vars": true,
+	// Non-secret runtime vars only — keeps this in sync with the
+	// Cloudflare Pages dashboard's "Runtime variables and secrets" ->
+	// Production tab. RESEND_API_KEY and SUPABASE_SECRET_KEY are secrets
+	// and must NEVER be added here (this file is committed to git) —
+	// they stay in the dashboard (marked "Encrypt") and in the
+	// gitignored .dev.vars for local dev.
+	"vars": {
+		"RESEND_FROM_EMAIL": "Awaseca Diagnostico <contacto@awaseca.com>",
+		"SALES_NOTIFICATION_EMAIL": "contacto@awaseca.com",
+		"SUPABASE_URL": "https://yvcvkbtbhndbfuuhzxbi.supabase.co"
+	},
 	"assets": {
 		"directory": "./dist",
 		"binding": "ASSETS"
