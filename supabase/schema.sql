@@ -44,6 +44,12 @@ create table public.diagnostic_submissions (
   recommendations jsonb not null,
   cta jsonb not null,
 
+  -- auto-generated sales-brief markdown (one per submission), also
+  -- emailed to the sales team and, in local dev only, written to the
+  -- gitignored Interpretaciones/ folder — see
+  -- src/lib/diagnostic/report/build-interpretation-markdown.ts
+  interpretation_markdown text,
+
   -- attribution (spec §44)
   source text,
   landing_page text,
@@ -62,3 +68,8 @@ alter table public.diagnostic_submissions enable row level security;
 -- No policies added: the anon/public key gets zero access by default.
 -- Only the service-role key (used server-side, in the API route only)
 -- can read or write this table.
+
+-- Migration for an existing project created before the sales-brief
+-- automation was added (2026-10-05) — run once in the SQL Editor:
+--   alter table public.diagnostic_submissions
+--     add column if not exists interpretation_markdown text;

@@ -10,3 +10,13 @@
 
 SUPABASE_URL=https://your-project-ref.supabase.co
 SUPABASE_SECRET_KEY=your-secret-api-key
+
+# Sends the auto-generated sales-brief email after each diagnostic
+# submission (see "Sales-brief notifications" in README.md). Get the API
+# key from resend.com -> API Keys. RESEND_FROM_EMAIL must be an address on
+# a domain verified in your Resend account; SALES_NOTIFICATION_EMAIL is
+# whoever on the sales team should receive the brief. If either var is
+# missing, the submission still saves normally — only the email is skipped.
+RESEND_API_KEY=your-resend-api-key
+RESEND_FROM_EMAIL=Awaseca <diagnosticos@awaseca.com>
+SALES_NOTIFICATION_EMAIL=ventas@awaseca.com
